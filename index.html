@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COMMAND CENTER ULTIMATE</title>
+    <title>COMMAND CENTER | TACTICAL OPS</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -11,205 +11,298 @@
 
     <style>
         :root {
-            /* --- THEME COLORS --- */
-            --bg-body: #050505;
-            --bg-sidebar: #0a0a0a;
-            --bg-panel: #111;
-            --bg-card: #1c1c1c;
-            --border: #333;
-            
-            --accent: #3b82f6;      
-            --accent-h: #2563eb;
-            --danger: #ef4444;      
-            --success: #10b981;     
-            --warn: #f59e0b;        
-            --purple: #d946ef;      
-            
-            --text-main: #e2e8f0;
+            --bg-body: #0f172a;
+            --bg-sidebar: #1e293b;
+            --bg-glass: rgba(30, 41, 59, 0.7);
+            --bg-card: #1e293b;
+            --bg-input: #020617;
+            --border: #334155;
+            --border-hover: #475569;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.3);
+            --danger: #ef4444;
+            --success: #10b981;
+            --warn: #f59e0b;
+            --purple: #d946ef;
+            --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            
             --font-head: 'Rajdhani', sans-serif;
             --font-body: 'Inter', sans-serif;
+            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
 
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-body); }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
         body {
             background-color: var(--bg-body);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(239, 68, 68, 0.05) 0%, transparent 20%);
             color: var(--text-main);
             font-family: var(--font-body);
             height: 100vh;
             display: flex;
             overflow: hidden;
+            font-size: 14px;
         }
 
-        /* --- 1. SIDEBAR --- */
         .sidebar {
-            width: 70px;
+            width: 80px;
             background: var(--bg-sidebar);
             border-right: 1px solid var(--border);
             display: flex; flex-direction: column; align-items: center;
-            padding-top: 20px; z-index: 50;
+            padding: 25px 0; z-index: 50;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.3);
         }
 
         .brand-icon {
-            font-size: 24px; color: var(--accent);
-            margin-bottom: 30px;
-            filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5));
+            font-size: 28px; color: var(--accent);
+            margin-bottom: 40px;
+            background: rgba(59, 130, 246, 0.1);
+            width: 50px; height: 50px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 12px;
+            border: 1px solid var(--accent-glow);
+            box-shadow: 0 0 15px var(--accent-glow);
         }
 
         .nav-btn {
-            width: 45px; height: 45px;
-            border-radius: 10px;
+            width: 50px; height: 50px;
+            border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
             color: var(--text-muted);
-            font-size: 1.2rem;
-            margin-bottom: 12px;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
             cursor: pointer;
-            transition: 0.2s all;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
         }
-        .nav-btn:hover { background: rgba(255,255,255,0.1); color: white; }
-        .nav-btn.active { background: var(--accent); color: white; box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
+        
+        .nav-btn:hover { background: rgba(255,255,255,0.05); color: #fff; transform: translateY(-2px); }
+        
+        .nav-btn.active { 
+            background: linear-gradient(135deg, var(--accent), #2563eb); 
+            color: white; 
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
         
         .nav-btn::after {
             content: attr(data-tooltip);
-            position: absolute; left: 60px; background: #333; color: white;
-            padding: 4px 8px; border-radius: 4px; font-size: 0.7rem;
+            position: absolute; left: 70px; 
+            background: #0f172a; color: var(--accent); border: 1px solid var(--border);
+            padding: 6px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;
             opacity: 0; pointer-events: none; transition: 0.2s; white-space: nowrap;
+            transform: translateX(-10px);
+            font-family: var(--font-head); text-transform: uppercase;
         }
-        .nav-btn:hover::after { opacity: 1; left: 55px; }
+        .nav-btn:hover::after { opacity: 1; transform: translateX(0); }
 
-        /* --- 2. MAIN LAYOUT --- */
         .main-content {
             flex: 1; display: flex; flex-direction: column;
             position: relative; overflow: hidden;
+            background: rgba(15, 23, 42, 0.5);
         }
 
         .top-bar {
-            height: 60px; border-bottom: 1px solid var(--border);
-            background: rgba(10, 10, 10, 0.95);
+            height: 70px; border-bottom: 1px solid var(--border);
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; flex-shrink: 0;
+            padding: 0 30px; flex-shrink: 0;
+            z-index: 40;
         }
 
-        .page-title { font-family: var(--font-head); font-weight: 700; font-size: 1.4rem; letter-spacing: 1px; text-transform: uppercase; }
+        .page-title { 
+            font-family: var(--font-head); font-weight: 700; font-size: 1.6rem; 
+            letter-spacing: 2px; text-transform: uppercase; 
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
 
-        .control-group { display: flex; gap: 10px; align-items: center; }
+        .control-group { display: flex; gap: 12px; align-items: center; }
         
-        .input-dark {
-            background: #222; border: 1px solid var(--border);
-            color: white; padding: 8px 12px; border-radius: 6px;
-            font-family: var(--font-body); font-size: 0.85rem;
+        .input-group-merged {
+            display: flex; align-items: center;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 2px;
+            transition: 0.2s;
         }
-        .input-dark:focus { border-color: var(--accent); }
-        select.input-dark { cursor: pointer; }
+        .input-group-merged:focus-within { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+
+        .input-dark {
+            background: transparent; border: none;
+            color: white; padding: 8px 12px;
+            font-family: var(--font-body); font-size: 0.9rem;
+        }
+        .input-dark::placeholder { color: #475569; }
+        
+        select.input-dark { 
+            background: #1e293b; 
+            cursor: pointer; border-radius: 6px; margin-left: 2px; color: var(--text-muted);
+        }
+        select.input-dark:hover { color: white; background: #334155; }
 
         .btn {
-            padding: 8px 14px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer;
-            display: flex; align-items: center; gap: 6px; font-size: 0.8rem; transition: 0.2s;
+            padding: 9px 16px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; gap: 8px; font-size: 0.85rem; transition: 0.2s;
+            font-family: var(--font-body);
         }
-        .btn-primary { background: var(--accent); color: white; }
-        .btn-primary:hover { background: var(--accent-h); }
-        .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-muted); }
-        .btn-ghost:hover { border-color: white; color: white; }
+        .btn i { font-size: 1rem; }
+        
+        .btn-primary { 
+            background: var(--accent); color: white; 
+            box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+        }
+        .btn-primary:hover { background: #2563eb; transform: translateY(-1px); }
+        .btn-primary:active { transform: translateY(0); }
+
+        .btn-ghost { background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: var(--text-muted); }
+        .btn-ghost:hover { border-color: var(--text-muted); color: white; background: rgba(255,255,255,0.05); }
+        
         .btn-danger { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--danger); }
-        .btn-danger:hover { background: var(--danger); color: white; }
+        .btn-danger:hover { background: var(--danger); color: white; border-color: var(--danger); }
 
-        .view-section { display: none; flex: 1; overflow: hidden; flex-direction: column; animation: fadeIn 0.3s; }
+        .view-section { display: none; flex: 1; overflow: hidden; flex-direction: column; animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         .view-section.active { display: flex; }
-        @keyframes fadeIn { from{opacity:0; transform:translateY(5px)} to{opacity:1; transform:translateY(0)} }
+        @keyframes slideIn { from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)} }
 
-        /* GRID SYSTEM */
         .board-container {
-            flex: 1; padding: 20px;
+            flex: 1; padding: 25px;
             display: grid;
             grid-template-columns: repeat(3, 1fr); 
-            grid-template-rows: minmax(300px, 1fr);
-            gap: 15px; overflow-y: auto;
+            gap: 20px; overflow-y: auto; overflow-x: hidden;
         }
 
         .lane {
-            background: rgba(255,255,255,0.02);
-            border: 1px solid var(--border); border-radius: 8px;
-            display: flex; flex-direction: column; min-height: 250px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border); border-radius: 12px;
+            display: flex; flex-direction: column; min-height: 200px;
+            backdrop-filter: blur(5px);
+            transition: border-color 0.2s;
         }
+        .lane:hover { border-color: var(--border-hover); }
+
         .lane-header {
-            padding: 10px 15px; font-family: var(--font-head); font-weight: 700; font-size: 0.95rem;
+            padding: 15px; font-family: var(--font-head); font-weight: 700; font-size: 1.1rem;
             border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;
-            text-transform: uppercase; letter-spacing: 0.5px; background: rgba(0,0,0,0.2);
+            text-transform: uppercase; letter-spacing: 1px; 
+            background: rgba(0,0,0,0.2); border-radius: 12px 12px 0 0;
         }
+
         .lane-body { 
-            flex: 1; padding: 10px; overflow-y: auto; 
-            display: flex; flex-direction: column; gap: 8px; 
-            scrollbar-width: thin; scrollbar-color: #333 transparent;
+            flex: 1; padding: 12px; overflow-y: auto; 
+            display: flex; flex-direction: column; gap: 10px; 
         }
 
         .card {
-            background: var(--bg-card); padding: 10px 12px; border-radius: 6px;
-            border-left: 3px solid #555; position: relative; cursor: grab;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: 0.2s;
+            background: #253045; padding: 12px 15px; border-radius: 8px;
+            border: 1px solid transparent; border-left-width: 4px;
+            position: relative; cursor: grab;
+            box-shadow: var(--shadow-card); transition: all 0.2s;
         }
-        .card:hover { transform: translateY(-2px); background: #252525; box-shadow: 0 4px 8px rgba(0,0,0,0.4); }
-        .card-name { font-weight: 600; font-size: 0.95rem; color: #fff; display: flex; justify-content: space-between; }
-        .card-job { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
-        .card-badge { display: inline-block; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; margin-top: 6px; font-weight: 700; text-transform: uppercase; }
+        .card:hover { 
+            transform: translateY(-3px) scale(1.02); 
+            background: #334155; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4); 
+            z-index: 10;
+        }
+        .card:active { cursor: grabbing; }
 
-        /* LIST VIEW */
-        .list-container { flex: 1; overflow: auto; padding: 20px; }
-        .data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .card-name { font-weight: 600; font-size: 1rem; color: #fff; display: flex; justify-content: space-between; align-items: center; }
+        .card-job { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; font-family: var(--font-head); letter-spacing: 0.5px;}
+        
+        .card-badge { 
+            display: inline-block; font-size: 0.65rem; padding: 3px 8px; border-radius: 4px; 
+            margin-top: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+
+        .list-container { flex: 1; overflow: auto; padding: 30px; }
+        
+        .data-table { 
+            width: 100%; border-collapse: separate; border-spacing: 0 8px; 
+            font-size: 0.95rem; 
+        }
         .data-table th { 
-            text-align: left; padding: 12px 15px; color: var(--text-muted); 
-            border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg-body); z-index: 2;
+            text-align: left; padding: 0 15px 15px 15px; color: var(--text-muted); font-size: 0.8rem;
+            text-transform: uppercase; letter-spacing: 1px; font-family: var(--font-head);
+            border-bottom: 1px solid var(--border);
         }
-        .data-table td { padding: 10px 15px; border-bottom: 1px solid #222; color: #ddd; vertical-align: middle; }
-        .data-table tr:hover td { background: rgba(255,255,255,0.03); }
-        .tag-team { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .data-table td { 
+            padding: 15px; background: var(--bg-card); 
+            color: var(--text-main); vertical-align: middle; 
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        .data-table tr td:first-child { border-left: 1px solid var(--border); border-radius: 8px 0 0 8px; }
+        .data-table tr td:last-child { border-right: 1px solid var(--border); border-radius: 0 8px 8px 0; }
+        
+        .data-table tr:hover td { background: #2d3b55; border-color: #475569; }
 
-        /* TABLE SELECTS */
         .table-select {
-            background: transparent; border: 1px solid transparent; color: #ddd;
-            padding: 4px; border-radius: 4px; font-size: 0.9rem; cursor: pointer; width: 100%;
+            background: transparent; border: 1px solid transparent; color: var(--text-main);
+            padding: 6px 10px; border-radius: 6px; font-size: 0.9rem; cursor: pointer; width: 100%;
+            transition: 0.2s;
         }
-        .table-select:hover { border-color: #444; background: #1a1a1a; }
-        .table-select:focus { border-color: var(--accent); background: #111; }
-        .table-select option { background: #111; color: #fff; }
+        .table-select:hover { background: rgba(0,0,0,0.2); border-color: var(--border); }
+        .table-select:focus { border-color: var(--accent); background: #020617; }
+        .table-select option { background: #0f172a; color: #fff; padding: 10px;}
 
-        /* MAP VIEW */
         .map-wrapper { flex: 1; position: relative; display: flex; flex-direction: column; background: #000; }
         .map-tools {
-            height: 50px; background: #111; border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; gap: 15px; padding: 0 20px; z-index: 10;
+            height: 60px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; gap: 20px; padding: 0 30px; z-index: 10;
         }
-        .map-canvas-box { flex: 1; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        #map-img { max-width: 100%; max-height: 100%; pointer-events: none; }
+        .map-canvas-box { 
+            flex: 1; position: relative; overflow: hidden; 
+            display: flex; align-items: center; justify-content: center; 
+            background: radial-gradient(#1e293b 1px, transparent 1px) 0 0 / 20px 20px;
+            background-color: #020617;
+        }
+        #map-img { max-width: 100%; max-height: 100%; pointer-events: none; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
         #draw-canvas { position: absolute; inset: 0; cursor: crosshair; }
-        .color-dot { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
-        .color-dot.active { border-color: #fff; transform: scale(1.2); }
-
-        /* COLORS */
-        .c-wpn { border-color: var(--danger); } 
-        .c-bio { border-color: var(--success); }
-        .c-gather { border-color: var(--warn); }
-        .c-craft { border-color: var(--purple); }
         
-        .bg-soft-wpn { background: rgba(239, 68, 68, 0.15); color: #fca5a5; }
-        .bg-soft-bio { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; }
-        .bg-soft-gather { background: rgba(245, 158, 11, 0.15); color: #fcd34d; }
-        .bg-soft-craft { background: rgba(217, 70, 239, 0.15); color: #f0abfc; }
-
-        /* MODAL */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100;
-            display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px);
+        .color-dot { 
+            width: 24px; height: 24px; border-radius: 50%; cursor: pointer; 
+            border: 2px solid var(--bg-sidebar); box-shadow: 0 0 0 1px var(--border); transition: 0.2s;
         }
-        .modal-content { width: 500px; background: #151515; border: 1px solid var(--border); padding: 25px; border-radius: 10px; }
+        .color-dot:hover { transform: scale(1.1); }
+        .color-dot.active { border-color: white; transform: scale(1.2); box-shadow: 0 0 10px currentColor; }
+
+        .c-wpn { border-left-color: var(--danger); } 
+        .c-bio { border-left-color: var(--success); }
+        .c-gather { border-left-color: var(--warn); }
+        .c-craft { border-left-color: var(--purple); }
+        
+        .bg-soft-wpn { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+        .bg-soft-bio { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
+        .bg-soft-gather { background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1px solid rgba(245,158,11,0.3); }
+        .bg-soft-craft { background: rgba(217, 70, 239, 0.2); color: #f0abfc; border: 1px solid rgba(217,70,239,0.3); }
+
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100;
+            display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px);
+        }
+        .modal-content { 
+            width: 500px; background: #1e293b; border: 1px solid var(--border); 
+            padding: 30px; border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
+        }
         
         @media (max-width: 1200px) { .board-container { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 768px) { .board-container { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .board-container { grid-template-columns: 1fr; } .sidebar { width: 60px; } .top-bar { padding: 0 15px; } .page-title { font-size: 1.2rem; } }
         
-        #user-info { font-size: 0.8rem; color: var(--accent); font-weight: 600; display: flex; align-items: center; gap: 8px;}
-        .player-count-badge { background: #333; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; }
+        #user-info { font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; align-items: flex-end; line-height: 1.3;}
+        #u-email { font-weight: 600; color: white; }
+        .player-count-badge { color: var(--accent); font-size: 0.75rem; font-family: var(--font-head); letter-spacing: 1px; text-transform: uppercase;}
+        
+        .divider-v { width:1px; height:30px; background:var(--border); margin:0 10px; }
+        .fa-trash:hover { color: #f87171 !important; transform: scale(1.1); transition: 0.2s;}
     </style>
 </head>
 <body>
@@ -217,13 +310,13 @@
     <nav class="sidebar">
         <div class="brand-icon"><i class="fa-solid fa-layer-group"></i></div>
         
-        <div class="nav-btn active" id="btn-view-board" data-tooltip="Board View">
+        <div class="nav-btn active" id="btn-view-board" data-tooltip="Tactical Board">
             <i class="fa-solid fa-chart-simple"></i>
         </div>
-        <div class="nav-btn" id="btn-view-list" data-tooltip="List / Table">
+        <div class="nav-btn" id="btn-view-list" data-tooltip="Roster List">
             <i class="fa-solid fa-table-list"></i>
         </div>
-        <div class="nav-btn" id="btn-view-map" data-tooltip="Tactical Map">
+        <div class="nav-btn" id="btn-view-map" data-tooltip="Ops Map">
             <i class="fa-solid fa-map"></i>
         </div>
     </nav>
@@ -231,20 +324,21 @@
     <main class="main-content">
         
         <header class="top-bar">
-            <div class="page-title" id="page-title">COMMAND DASHBOARD</div>
+            <div class="page-title" id="page-title">TACTICAL BOARD</div>
             
             <div class="control-group">
                 <div id="user-info">
-                    <span id="u-email">Loading...</span>
-                    <span class="player-count-badge" id="u-count">0 Players</span>
+                    <span id="u-email">Connecting...</span>
+                    <span class="player-count-badge" id="u-count">0 UNITS ACTIVE</span>
                 </div>
-                <div style="width:1px; height:20px; background:var(--border); margin:0 5px;"></div>
+                
+                <div class="divider-v"></div>
 
-                <div style="display:flex; gap:0; border:1px solid var(--border); border-radius:6px; overflow:hidden;">
-                    <input type="text" id="in-name" class="input-dark" placeholder="Name..." style="border:none; width:120px;" autocomplete="off">
-                    
-                    <select id="in-job" class="input-dark" style="border:none; border-left:1px solid var(--border); background:#1a1a1a;">
-                        <option value="" disabled selected>Select Job...</option>
+                <div class="input-group-merged">
+                    <input type="text" id="in-name" class="input-dark" placeholder="Unit Name..." style="width:140px;" autocomplete="off">
+                    <div style="width:1px; height:20px; background:var(--border);"></div>
+                    <select id="in-job" class="input-dark">
+                        <option value="" disabled selected>Role / Job</option>
                         <optgroup label="WEAPON MASTER">
                             <option value="Rifleman">Rifleman</option>
                             <option value="Warrior">Warrior</option>
@@ -267,13 +361,16 @@
                         </optgroup>
                     </select>
                 </div>
-                <button class="btn btn-primary" id="btn-add"><i class="fa-solid fa-plus"></i></button>
                 
-                <div style="width:1px; height:20px; background:var(--border); margin:0 5px;"></div>
+                <button class="btn btn-primary" id="btn-add">
+                    <i class="fa-solid fa-plus"></i> <span>Add Unit</span>
+                </button>
                 
-                <button class="btn btn-ghost" id="btn-bulk"><i class="fa-solid fa-upload"></i> Bulk</button>
-                <button class="btn btn-ghost" id="btn-copy"><i class="fa-brands fa-discord"></i> Copy</button>
-                <button class="btn btn-danger" id="btn-logout"><i class="fa-solid fa-right-from-bracket"></i></button>
+                <div class="divider-v"></div>
+                
+                <button class="btn btn-ghost" id="btn-bulk" title="Bulk Import"><i class="fa-solid fa-file-import"></i></button>
+                <button class="btn btn-ghost" id="btn-copy" title="Copy for Discord"><i class="fa-brands fa-discord"></i></button>
+                <button class="btn btn-danger" id="btn-logout" title="Logout"><i class="fa-solid fa-power-off"></i></button>
             </div>
         </header>
 
@@ -283,14 +380,59 @@
 
         <div id="view-list" class="view-section">
             <div class="list-container">
+                <div class="filter-bar" style="display:flex; gap:10px; margin-bottom:20px; background:rgba(0,0,0,0.2); padding:15px; border-radius:12px; border:1px solid var(--border);">
+                    <div class="input-group-merged" style="flex:1;">
+                        <i class="fa-solid fa-magnifying-glass" style="color:var(--text-muted); padding-left:12px;"></i>
+                        <input type="text" id="f-name" class="input-dark" placeholder="Filter Name..." style="width:100%">
+                    </div>
+                    
+                    <select id="f-team" class="input-dark" style="background:var(--bg-input); border:1px solid var(--border); border-radius:8px;">
+                        <option value="ALL">All Squads</option>
+                    </select>
+        
+                    <select id="f-class" class="input-dark" style="background:var(--bg-input); border:1px solid var(--border); border-radius:8px;">
+                        <option value="ALL">All Classes</option>
+                        <option value="WEAPON">Weapon Master</option>
+                        <option value="BIO-OPS">Bio Ops</option>
+                        <option value="GATHER">Gather</option>
+                        <option value="CRAFT">Craft</option>
+                    </select>
+        
+                    <select id="f-job" class="input-dark" style="background:var(--bg-input); border:1px solid var(--border); border-radius:8px;">
+                        <option value="ALL">All Jobs</option>
+                        <optgroup label="WEAPON MASTER">
+                            <option value="Rifleman">Rifleman</option>
+                            <option value="Warrior">Warrior</option>
+                            <option value="Sniper">Sniper</option>
+                        </optgroup>
+                        <optgroup label="BIO MASTER">
+                            <option value="Ark Knight">Ark Knight</option>
+                            <option value="Virus">Virus Hunter</option>
+                            <option value="Exorcist">Exorcist</option>
+                        </optgroup>
+                        <optgroup label="GATHER">
+                            <option value="Logger">Logger</option>
+                            <option value="Hempicker">Hempicker</option>
+                            <option value="Miner">Miner</option>
+                        </optgroup>
+                        <optgroup label="CRAFT">
+                            <option value="Gunmaker">Gunmaker</option>
+                            <option value="Armorer">Armorer</option>
+                            <option value="Upholster">Upholster</option>
+                        </optgroup>
+                    </select>
+        
+                    <button class="btn btn-ghost" id="btn-reset-filter" title="Reset"><i class="fa-solid fa-rotate-left"></i></button>
+                </div>
+
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th style="width:20%">Unit Name</th>
-                            <th style="width:30%">Job / Role</th>
-                            <th style="width:30%">Division (Team)</th>
-                            <th style="width:10%">Category</th>
-                            <th style="width:10%; text-align:right">Action</th>
+                            <th style="width:25%">Unit Name</th>
+                            <th style="width:25%">Job / Specialization</th>
+                            <th style="width:25%">Squad Assignment</th>
+                            <th style="width:15%">Class</th>
+                            <th style="width:10%; text-align:right">Opt</th>
                         </tr>
                     </thead>
                     <tbody id="table-body"></tbody>
@@ -300,27 +442,30 @@
 
         <div id="view-map" class="view-section">
             <div class="map-tools">
-                <select id="map-select" class="input-dark">
-                    <option value="overview.jpg">Global Overview</option>
-                    <option value="Kota1.jpg">Kota A</option>
-                    <option value="kota2.jpg">Kota B</option>
-                    <option value="Nuclear.jpg">Nuclear Plant</option>
-                    <option value="mercu.jpg">Mercu Tower</option>
-                </select>
+                <div class="input-group-merged" style="border:none; padding:0;">
+                    <i class="fa-solid fa-map-location-dot" style="color:var(--text-muted); margin-right:10px;"></i>
+                    <select id="map-select" class="input-dark" style="background:var(--bg-input); border:1px solid var(--border); padding:8px;">
+                        <option value="overview.jpg">Global Overview</option>
+                        <option value="Kota1.jpg">Sector A (City)</option>
+                        <option value="kota2.jpg">Sector B (Ruins)</option>
+                        <option value="Nuclear.jpg">Nuclear Plant</option>
+                        <option value="mercu.jpg">Mercu Tower</option>
+                    </select>
+                </div>
                 
-                <div style="width:1px; height:20px; background:var(--border);"></div>
+                <div class="divider-v"></div>
                 
-                <div class="color-dot active" style="background:var(--danger)" data-color="#ef4444"></div>
-                <div class="color-dot" style="background:var(--accent)" data-color="#3b82f6"></div>
-                <div class="color-dot" style="background:var(--success)" data-color="#10b981"></div>
-                <div class="color-dot" style="background:var(--warn)" data-color="#f59e0b"></div>
+                <div class="color-dot active" style="background:var(--danger)" data-color="#ef4444" title="Enemy / Danger"></div>
+                <div class="color-dot" style="background:var(--accent)" data-color="#3b82f6" title="Ally / Move"></div>
+                <div class="color-dot" style="background:var(--success)" data-color="#10b981" title="Safe / Objective"></div>
+                <div class="color-dot" style="background:var(--warn)" data-color="#f59e0b" title="Caution"></div>
                 
                 <div style="flex:1"></div>
-                <button class="btn btn-ghost" id="btn-clear-map"><i class="fa-solid fa-eraser"></i> Clear Ink</button>
+                <button class="btn btn-ghost" id="btn-clear-map"><i class="fa-solid fa-eraser"></i> Clear Tactics</button>
             </div>
             
             <div class="map-canvas-box" id="map-box">
-                <img id="map-img" src="" alt="Map not found (Check file name)">
+                <img id="map-img" src="" alt="Select a Map Region">
                 <canvas id="draw-canvas"></canvas>
             </div>
         </div>
@@ -329,12 +474,14 @@
 
     <div class="modal-overlay" id="modal-bulk">
         <div class="modal-content">
-            <h3 style="margin-bottom:15px; font-family:var(--font-head); color:white;">Bulk Import</h3>
-            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:10px;">Format: Name - Job (Enter for new line)</p>
-            <textarea id="bulk-txt" class="input-dark" style="width:100%; height:200px; font-family:monospace; margin-bottom:15px;" placeholder="Hiro - Sniper&#10;Budi - Miner"></textarea>
+            <h3 style="margin-bottom:5px; font-family:var(--font-head); color:white; font-size:1.5rem;">BULK IMPORT</h3>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;">Paste list below. Format: <code>Name - Job</code></p>
+            
+            <textarea id="bulk-txt" class="input-dark" style="width:100%; height:200px; font-family: 'JetBrains Mono', monospace; margin-bottom:20px; background: var(--bg-input); border:1px solid var(--border); border-radius:8px; line-height:1.5; resize:none;" placeholder="Hiro - Sniper&#10;Budi - Miner"></textarea>
+            
             <div style="display:flex; justify-content:flex-end; gap:10px;">
                 <button class="btn btn-ghost" id="btn-close-bulk">Cancel</button>
-                <button class="btn btn-primary" id="btn-process-bulk">Import Data</button>
+                <button class="btn btn-primary" id="btn-process-bulk">Start Import</button>
             </div>
         </div>
     </div>
@@ -347,7 +494,7 @@
         </optgroup>
         <optgroup label="BIO MASTER">
             <option value="Ark Knight">Ark Knight</option>
-            <option value="Virus/Spore Hunter">Virus/Spore Hunter</option>
+            <option value="Virus/Spore Hunter">Virus Hunter</option>
             <option value="Exorcist">Exorcist</option>
         </optgroup>
         <optgroup label="GATHER">
@@ -367,7 +514,6 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyCWzttWHmPGxVINMksXgVkqjzP4jFHf0wE",
             authDomain: "wartactic-8a8a1.firebaseapp.com",
@@ -385,14 +531,13 @@
         let players = []; 
         let unsubscribe = null; 
 
-        // --- AUTH CHECK ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
-                document.getElementById('u-email').innerText = user.email;
+                document.getElementById('u-email').innerText = user.email.split('@')[0].toUpperCase();
                 initRealtimeData();
             } else {
-                window.location.href = "login.html";
+                 window.location.href = "login.html";
             }
         });
 
@@ -400,9 +545,8 @@
             signOut(auth);
         });
 
-        // --- CONSTANTS ---
         const TEAMS = [
-            { id: 'cmd', label: 'High Command', color: '#a855f7' },
+            { id: 'cmd', label: 'High Command', color: '#d946ef' },
             { id: 'atk', label: 'Attack Squad', color: '#ef4444' },
             { id: 'mid', label: 'Mid Patrol',   color: '#f97316' },
             { id: 'def', label: 'Defense Team', color: '#3b82f6' },
@@ -417,7 +561,6 @@
             CRAFT:  ['gunmaker', 'armorer', 'upholster']
         };
 
-        // --- FIRESTORE LOGIC ---
         function initRealtimeData() {
             if(!currentUser) return;
             
@@ -429,8 +572,7 @@
                 snapshot.forEach((doc) => {
                     players.push({ id: doc.id, ...doc.data() });
                 });
-                // Update Total Count (Request #3)
-                document.getElementById('u-count').innerText = `${players.length} Players`;
+                document.getElementById('u-count').innerText = `${players.length} UNITS ACTIVE`;
                 renderAll();
             });
         }
@@ -459,24 +601,21 @@
 
         async function deleteUnitFromDB(id) {
             if(!currentUser) return;
-            if(confirm('Delete this unit?')) {
+            if(confirm('Confirm decomission of this unit?')) {
                 await deleteDoc(doc(db, "users", currentUser.uid, "units", id));
             }
         }
 
-        // --- LOGIC HELPER: CHECK COMMANDER LIMIT (Request #4) ---
         function canJoinTeam(teamId) {
             if(teamId !== 'cmd') return true;
-            // Count current commanders
             const currentCmds = players.filter(p => p.team === 'cmd').length;
             if(currentCmds >= 2) {
-                alert("⛔ ACCESS DENIED: Max 2 Commanders allowed!");
+                alert("⛔ PERMISSION DENIED: Commander slots full (Max 2).");
                 return false;
             }
             return true;
         }
 
-        // --- BULK LOGIC ---
         document.getElementById('btn-bulk').addEventListener('click', () => {
             document.getElementById('modal-bulk').style.display = 'flex';
         });
@@ -489,7 +628,7 @@
             const lines = txt.split('\n');
             const btn = document.getElementById('btn-process-bulk');
             
-            btn.innerText = "Importing...";
+            btn.innerText = "Processing...";
             btn.disabled = true;
 
             for(let l of lines) {
@@ -503,30 +642,25 @@
             
             document.getElementById('bulk-txt').value = '';
             document.getElementById('modal-bulk').style.display = 'none';
-            btn.innerText = "Import Data";
+            btn.innerText = "Start Import";
             btn.disabled = false;
         });
 
-        // --- EXPOSE TO WINDOW ---
         window.deleteUnitWrapper = (id) => deleteUnitFromDB(id);
         
-        // Window wrapper for select change (Table Edit)
         window.changeJobWrapper = (id, el) => {
             updateUnitJob(id, el.value);
         };
         window.changeTeamWrapper = (id, el) => {
             const newTeam = el.value;
-            // Check Limit for Table Edit
             if(canJoinTeam(newTeam)) {
                 updateUnitTeam(id, newTeam);
             } else {
-                // Revert select to old value if rejected
                 const oldP = players.find(p => p.id === id);
                 el.value = oldP.team; 
             }
         };
 
-        // --- UI LOGIC ---
         document.addEventListener('DOMContentLoaded', () => {
             initBoardLanes();
             setupViewSwitcher();
@@ -546,6 +680,29 @@
             });
             
             document.getElementById('btn-copy').addEventListener('click', copyDiscord);
+
+            const fInputs = ['f-name', 'f-team', 'f-class', 'f-job'];
+
+            const teamSelect = document.getElementById('f-team');
+            TEAMS.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t.id;
+                opt.innerText = t.label;
+                teamSelect.appendChild(opt);
+            });
+
+            fInputs.forEach(id => {
+                document.getElementById(id).addEventListener('input', renderList);
+                document.getElementById(id).addEventListener('change', renderList);
+            });
+
+            document.getElementById('btn-reset-filter').addEventListener('click', () => {
+                fInputs.forEach(id => {
+                    const el = document.getElementById(id);
+                    el.value = (id === 'f-name') ? '' : 'ALL';
+                });
+                renderList();
+            });
         });
 
         function renderAll() {
@@ -555,9 +712,9 @@
 
         function getJobInfo(job) {
             const j = job.toLowerCase();
-            if(JOB_GROUPS.WPN.some(x => j.includes(x))) return { cat: 'WPN', style: 'bg-soft-wpn', border: 'c-wpn' };
-            if(JOB_GROUPS.BIO.some(x => j.includes(x))) return { cat: 'BIO', style: 'bg-soft-bio', border: 'c-bio' };
-            if(JOB_GROUPS.GATHER.some(x => j.includes(x))) return { cat: 'GATHER', style: 'bg-soft-gather', border: 'c-gather' };
+            if(JOB_GROUPS.WPN.some(x => j.includes(x))) return { cat: 'WEAPON', style: 'bg-soft-wpn', border: 'c-wpn' };
+            if(JOB_GROUPS.BIO.some(x => j.includes(x))) return { cat: 'BIO-OPS', style: 'bg-soft-bio', border: 'c-bio' };
+            if(JOB_GROUPS.GATHER.some(x => j.includes(x))) return { cat: 'GETHER', style: 'bg-soft-gather', border: 'c-gather' };
             if(JOB_GROUPS.CRAFT.some(x => j.includes(x))) return { cat: 'CRAFT', style: 'bg-soft-craft', border: 'c-craft' };
             return { cat: 'UNKNOWN', style: 'bg-soft-gather', border: 'c-gather' };
         }
@@ -569,28 +726,28 @@
                 const col = document.createElement('div');
                 col.className = 'lane';
                 col.dataset.team = t.id;
+                col.style.borderTop = `3px solid ${t.color}`;
+                
                 col.innerHTML = `
-                    <div class="lane-header" style="color:${t.color}; border-left: 3px solid ${t.color}">
+                    <div class="lane-header" style="color:${t.color};">
                         ${t.label} 
-                        <span id="cnt-${t.id}" style="font-size:0.8em; opacity:0.7; background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px;">0</span>
+                        <span id="cnt-${t.id}" style="font-size:0.8em; opacity:0.8; background:rgba(255,255,255,0.1); padding:2px 8px; border-radius:6px; color:white;">0</span>
                     </div>
                     <div class="lane-body" id="lane-${t.id}" data-team="${t.id}"></div>
                 `;
                 container.appendChild(col);
 
                 new Sortable(col.querySelector('.lane-body'), {
-                    group: 'elite', animation: 150, delay: 50,
+                    group: 'elite', animation: 200, delay: 0, ghostClass: 'sortable-ghost',
                     onEnd: (evt) => {
                         const pid = evt.item.dataset.id;
                         const newTeam = evt.to.dataset.team;
                         const oldTeam = evt.from.dataset.team;
                         
                         if(pid && newTeam !== oldTeam) {
-                            // Check Limit for Drag & Drop
                             if(canJoinTeam(newTeam)) {
                                 updateUnitTeam(pid, newTeam);
                             } else {
-                                // Revert visual move
                                 evt.from.appendChild(evt.item); 
                             }
                         }
@@ -602,7 +759,6 @@
         function renderBoard() {
             TEAMS.forEach(t => {
                 const laneEl = document.getElementById(`lane-${t.id}`);
-                // Simple Diff Check or Clear - Clearing is safer for small lists
                 laneEl.innerHTML = ''; 
                 
                 const teamPlayers = players.filter(p => p.team === t.id);
@@ -614,7 +770,10 @@
                     card.className = `card ${info.border}`;
                     card.dataset.id = p.id;
                     card.innerHTML = `
-                        <div class="card-name">${p.name} <i class="fa-solid fa-xmark" style="cursor:pointer; opacity:0.3;" onclick="window.deleteUnitWrapper('${p.id}')"></i></div>
+                        <div class="card-name">
+                            ${p.name} 
+                            <i class="fa-solid fa-xmark" style="color:var(--text-muted); cursor:pointer; font-size:0.9em" onclick="window.deleteUnitWrapper('${p.id}')"></i>
+                        </div>
                         <div class="card-job">${p.job}</div>
                         <span class="card-badge ${info.style}">${info.cat}</span>
                     `;
@@ -627,19 +786,35 @@
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = '';
             
-            // Get Job Options Template
+            const fName = document.getElementById('f-name').value.toLowerCase();
+            const fTeam = document.getElementById('f-team').value;
+            const fClass = document.getElementById('f-class').value;
+            const fJob = document.getElementById('f-job').value;
+
             const jobTemplate = document.getElementById('hidden-job-template').innerHTML;
 
-            const sorted = [...players].sort((a,b) => {
+            const filtered = players.filter(p => {
+                const info = getJobInfo(p.job);
+                const matchName = p.name.toLowerCase().includes(fName);
+                const matchTeam = (fTeam === 'ALL') ? true : p.team === fTeam;
+                const matchClass = (fClass === 'ALL') ? true : info.cat === fClass;
+                const matchJob = (fJob === 'ALL') ? true : p.job.includes(fJob);
+                return matchName && matchTeam && matchClass && matchJob;
+            });
+
+            const sorted = filtered.sort((a,b) => {
                 const idxA = TEAMS.findIndex(t => t.id === a.team);
                 const idxB = TEAMS.findIndex(t => t.id === b.team);
                 return idxA - idxB;
             });
 
+            if(sorted.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:var(--text-muted);">No units match filters.</td></tr>`;
+                return;
+            }
+
             sorted.forEach(p => {
                 const info = getJobInfo(p.job);
-                
-                // Construct Team Options
                 let teamOpts = '';
                 TEAMS.forEach(t => {
                     teamOpts += `<option value="${t.id}" ${p.team === t.id ? 'selected' : ''}>${t.label}</option>`;
@@ -647,7 +822,9 @@
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td style="font-weight:600; color:white;">${p.name}</td>
+                    <td style="font-weight:600; color:white;">
+                        <i class="fa-solid fa-user-tag" style="color:var(--accent); margin-right:8px;"></i> ${p.name}
+                    </td>
                     
                     <td>
                         <select class="table-select" onchange="window.changeJobWrapper('${p.id}', this)">
@@ -657,14 +834,14 @@
                     </td>
 
                     <td>
-                        <select class="table-select" style="color:${TEAMS.find(t=>t.id===p.team)?.color}" onchange="window.changeTeamWrapper('${p.id}', this)">
+                        <select class="table-select" style="font-weight:600; color:${TEAMS.find(t=>t.id===p.team)?.color}" onchange="window.changeTeamWrapper('${p.id}', this)">
                             ${teamOpts}
                         </select>
                     </td>
                     
                     <td><span class="card-badge ${info.style}">${info.cat}</span></td>
                     <td style="text-align:right">
-                        <button class="btn-ghost" style="padding:4px 8px; color:var(--danger); border:none;" onclick="window.deleteUnitWrapper('${p.id}')">
+                        <button class="btn-ghost" style="padding:6px 10px; color:var(--text-muted); border:none;" onclick="window.deleteUnitWrapper('${p.id}')">
                             <i class="fa-solid fa-trash"></i>
                         </button>
                     </td>
@@ -674,13 +851,12 @@
         }
 
         function copyDiscord() {
-            let txt = "**🚨 ELITE OPS ROSTER**\n";
-            txt += `*Updated: ${new Date().toLocaleTimeString()}*\n────────────────\n`;
+            let txt = "**Current Team war**\n";
+            txt += `*Generated: ${new Date().toLocaleTimeString()}*\n────────────────\n`;
             
             let totalActive = 0;
 
             TEAMS.forEach(t => {
-                // SKIP RESERVE (Request #1)
                 if(t.id === 'res') return; 
 
                 const list = players.filter(p => p.team === t.id);
@@ -688,23 +864,26 @@
 
                 txt += `\n**${t.label.toUpperCase()}** [${list.length}]\n`;
                 if(list.length > 0) {
-                    txt += "```\n";
+                    txt += "```ini\n"; 
                     list.forEach((p, i) => {
-                        txt += `${(i+1).toString().padStart(2, '0')}. ${p.name} - ${p.job}\n`;
+                        txt += `[${(i+1).toString().padStart(2, '0')}] ${p.name.padEnd(12)} | ${p.job}\n`;
                     });
                     txt += "```";
                 } else {
-                    txt += "> *Empty*\n";
+                    txt += "> *No Units Assigned*\n";
                 }
             });
             
-            txt += `\nTotal Active Personnel: ${totalActive}`;
+            txt += `\n**TOTAL FORCES:** ${totalActive}`;
 
             navigator.clipboard.writeText(txt);
-            alert(`Copied to Clipboard! (Reserves excluded)`);
+            
+            const btn = document.getElementById('btn-copy');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-check"></i>`;
+            setTimeout(() => btn.innerHTML = originalHTML, 2000);
         }
 
-        // --- VIEW SWITCHER ---
         function setupViewSwitcher() {
             const views = ['board', 'list', 'map'];
             views.forEach(v => {
@@ -714,14 +893,13 @@
                     document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
                     document.getElementById(`view-${v}`).classList.add('active');
                     
-                    const titles = { 'board': 'TACTICAL BOARD', 'list': 'ROSTER LIST', 'map': 'TACTICAL MAP' };
+                    const titles = { 'board': 'TACTICAL BOARD', 'list': 'ROSTER DATABASE', 'map': 'OPERATIONS MAP' };
                     document.getElementById('page-title').innerText = titles[v];
                     if(v === 'map') resizeCanvas();
                 });
             });
         }
 
-        // --- MAP LOGIC ---
         let painting = false;
         let penColor = '#ef4444';
         const canvas = document.getElementById('draw-canvas');
@@ -773,7 +951,6 @@
             ctx.beginPath();
             ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
         }
-
     </script>
 </body>
 </html>
