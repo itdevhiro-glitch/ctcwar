@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACCESS CONTROL // ELITE OPS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-body: #050505;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.5);
+            --border: #333;
+            --font-head: 'Rajdhani', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font-body); }
+        
+        body {
+            background-color: var(--bg-body);
+            height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            color: #e2e8f0;
+            background-image: radial-gradient(circle at 50% 50%, #111 0%, #050505 100%);
+        }
+
+        .login-card {
+            width: 400px;
+            padding: 40px;
+            background: #0a0a0a;
+            border: 1px solid var(--border);
+            border-top: 2px solid var(--accent);
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            position: relative;
+        }
+
+        .login-card::before {
+            content: ''; position: absolute; top: -2px; left: 0; width: 100%; height: 2px;
+            background: var(--accent);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .brand {
+            text-align: center; margin-bottom: 30px;
+            font-family: var(--font-head);
+        }
+        .brand i { font-size: 3rem; color: var(--accent); margin-bottom: 10px; display: block; }
+        .brand h1 { font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+        .brand p { color: #64748b; font-size: 0.9rem; letter-spacing: 1px; }
+
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: #94a3b8; font-weight: 600; }
+        
+        input {
+            width: 100%; padding: 12px;
+            background: #111; border: 1px solid var(--border);
+            color: white; border-radius: 4px; outline: none;
+            transition: 0.3s;
+        }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(59, 130, 246, 0.2); }
+
+        .btn {
+            width: 100%; padding: 12px;
+            background: var(--accent); color: white;
+            border: none; font-weight: 600; cursor: pointer;
+            font-family: var(--font-head); text-transform: uppercase; letter-spacing: 1px;
+            transition: 0.3s; margin-top: 10px;
+        }
+        .btn:hover { background: #2563eb; box-shadow: 0 0 15px var(--accent-glow); }
+        
+        .toggle-text {
+            text-align: center; margin-top: 20px; font-size: 0.85rem; color: #64748b;
+        }
+        .toggle-text span { color: var(--accent); cursor: pointer; text-decoration: underline; }
+
+        #error-msg {
+            color: #ef4444; font-size: 0.85rem; text-align: center;
+            margin-bottom: 15px; display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="brand">
+            <i class="fa-solid fa-shield-halved"></i>
+            <h1>System Login</h1>
+            <p>Identity Verification Required</p>
+        </div>
+
+        <p id="error-msg"></p>
+
+        <form id="auth-form">
+            <div class="form-group">
+                <label>OPERATOR EMAIL</label>
+                <input type="email" id="email" required placeholder="operator@eliteops.com">
+            </div>
+            <div class="form-group">
+                <label>ACCESS CODE</label>
+                <input type="password" id="password" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn" id="submit-btn">Initialize Link</button>
+        </form>
+
+        <p class="toggle-text">
+            New Operator? <span id="toggle-mode">Register Access</span>
+        </p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCWzttWHmPGxVINMksXgVkqjzP4jFHf0wE",
+            authDomain: "wartactic-8a8a1.firebaseapp.com",
+            projectId: "wartactic-8a8a1",
+            storageBucket: "wartactic-8a8a1.firebasestorage.app",
+            messagingSenderId: "409457288660",
+            appId: "1:409457288660:web:bafb9b3a475c1a31c56241",
+            measurementId: "G-M438315YTV"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Check if already logged in
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                window.location.href = "index.html";
+            }
+        });
+
+        let isLogin = true;
+        const form = document.getElementById('auth-form');
+        const emailIn = document.getElementById('email');
+        const passIn = document.getElementById('password');
+        const btn = document.getElementById('submit-btn');
+        const toggle = document.getElementById('toggle-mode');
+        const errorMsg = document.getElementById('error-msg');
+
+        toggle.addEventListener('click', () => {
+            isLogin = !isLogin;
+            btn.innerText = isLogin ? "Initialize Link" : "Register Credentials";
+            toggle.innerText = isLogin ? "Register Access" : "Back to Login";
+            errorMsg.style.display = 'none';
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = emailIn.value;
+            const pass = passIn.value;
+            errorMsg.style.display = 'none';
+            btn.style.opacity = '0.7';
+            btn.innerText = "Processing...";
+
+            try {
+                if (isLogin) {
+                    await signInWithEmailAndPassword(auth, email, pass);
+                } else {
+                    await createUserWithEmailAndPassword(auth, email, pass);
+                }
+                // Redirect handled by onAuthStateChanged
+            } catch (error) {
+                errorMsg.innerText = "Error: " + error.message.replace('Firebase:', '');
+                errorMsg.style.display = 'block';
+                btn.style.opacity = '1';
+                btn.innerText = isLogin ? "Initialize Link" : "Register Credentials";
+            }
+        });
+    </script>
+</body>
+</html>
