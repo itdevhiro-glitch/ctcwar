@@ -162,9 +162,18 @@
             text-align: left; padding: 12px 15px; color: var(--text-muted); 
             border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg-body); z-index: 2;
         }
-        .data-table td { padding: 10px 15px; border-bottom: 1px solid #222; color: #ddd; }
+        .data-table td { padding: 10px 15px; border-bottom: 1px solid #222; color: #ddd; vertical-align: middle; }
         .data-table tr:hover td { background: rgba(255,255,255,0.03); }
         .tag-team { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* TABLE SELECTS */
+        .table-select {
+            background: transparent; border: 1px solid transparent; color: #ddd;
+            padding: 4px; border-radius: 4px; font-size: 0.9rem; cursor: pointer; width: 100%;
+        }
+        .table-select:hover { border-color: #444; background: #1a1a1a; }
+        .table-select:focus { border-color: var(--accent); background: #111; }
+        .table-select option { background: #111; color: #fff; }
 
         /* MAP VIEW */
         .map-wrapper { flex: 1; position: relative; display: flex; flex-direction: column; background: #000; }
@@ -199,7 +208,8 @@
         @media (max-width: 1200px) { .board-container { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 768px) { .board-container { grid-template-columns: 1fr; } }
         
-        #user-info { font-size: 0.8rem; color: var(--accent); margin-right: 15px; font-weight: 600; }
+        #user-info { font-size: 0.8rem; color: var(--accent); font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .player-count-badge { background: #333; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; }
     </style>
 </head>
 <body>
@@ -224,7 +234,12 @@
             <div class="page-title" id="page-title">COMMAND DASHBOARD</div>
             
             <div class="control-group">
-                <span id="user-info">Loading...</span>
+                <div id="user-info">
+                    <span id="u-email">Loading...</span>
+                    <span class="player-count-badge" id="u-count">0 Players</span>
+                </div>
+                <div style="width:1px; height:20px; background:var(--border); margin:0 5px;"></div>
+
                 <div style="display:flex; gap:0; border:1px solid var(--border); border-radius:6px; overflow:hidden;">
                     <input type="text" id="in-name" class="input-dark" placeholder="Name..." style="border:none; width:120px;" autocomplete="off">
                     
@@ -271,11 +286,11 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Unit Name</th>
-                            <th>Job / Role</th>
-                            <th>Division (Team)</th>
-                            <th>Category</th>
-                            <th style="text-align:right">Action</th>
+                            <th style="width:20%">Unit Name</th>
+                            <th style="width:30%">Job / Role</th>
+                            <th style="width:30%">Division (Team)</th>
+                            <th style="width:10%">Category</th>
+                            <th style="width:10%; text-align:right">Action</th>
                         </tr>
                     </thead>
                     <tbody id="table-body"></tbody>
@@ -324,6 +339,29 @@
         </div>
     </div>
 
+    <select id="hidden-job-template" style="display:none">
+        <optgroup label="WEAPON MASTER">
+            <option value="Rifleman">Rifleman</option>
+            <option value="Warrior">Warrior</option>
+            <option value="Sniper">Sniper</option>
+        </optgroup>
+        <optgroup label="BIO MASTER">
+            <option value="Ark Knight">Ark Knight</option>
+            <option value="Virus/Spore Hunter">Virus/Spore Hunter</option>
+            <option value="Exorcist">Exorcist</option>
+        </optgroup>
+        <optgroup label="GATHER">
+            <option value="Logger">Logger</option>
+            <option value="Hempicker">Hempicker</option>
+            <option value="Miner">Miner</option>
+        </optgroup>
+        <optgroup label="CRAFT">
+            <option value="Gunmaker">Gunmaker</option>
+            <option value="Armorer">Armorer</option>
+            <option value="Upholster">Upholster</option>
+        </optgroup>
+    </select>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -351,7 +389,7 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
-                document.getElementById('user-info').innerText = user.email;
+                document.getElementById('u-email').innerText = user.email;
                 initRealtimeData();
             } else {
                 window.location.href = "login.html";
@@ -391,6 +429,8 @@
                 snapshot.forEach((doc) => {
                     players.push({ id: doc.id, ...doc.data() });
                 });
+                // Update Total Count (Request #3)
+                document.getElementById('u-count').innerText = `${players.length} Players`;
                 renderAll();
             });
         }
@@ -411,6 +451,12 @@
             await updateDoc(unitRef, { team: newTeam });
         }
 
+        async function updateUnitJob(id, newJob) {
+            if(!currentUser) return;
+            const unitRef = doc(db, "users", currentUser.uid, "units", id);
+            await updateDoc(unitRef, { job: newJob });
+        }
+
         async function deleteUnitFromDB(id) {
             if(!currentUser) return;
             if(confirm('Delete this unit?')) {
@@ -418,7 +464,19 @@
             }
         }
 
-        // --- BULK LOGIC (Updated to use Firebase) ---
+        // --- LOGIC HELPER: CHECK COMMANDER LIMIT (Request #4) ---
+        function canJoinTeam(teamId) {
+            if(teamId !== 'cmd') return true;
+            // Count current commanders
+            const currentCmds = players.filter(p => p.team === 'cmd').length;
+            if(currentCmds >= 2) {
+                alert("⛔ ACCESS DENIED: Max 2 Commanders allowed!");
+                return false;
+            }
+            return true;
+        }
+
+        // --- BULK LOGIC ---
         document.getElementById('btn-bulk').addEventListener('click', () => {
             document.getElementById('modal-bulk').style.display = 'flex';
         });
@@ -451,6 +509,22 @@
 
         // --- EXPOSE TO WINDOW ---
         window.deleteUnitWrapper = (id) => deleteUnitFromDB(id);
+        
+        // Window wrapper for select change (Table Edit)
+        window.changeJobWrapper = (id, el) => {
+            updateUnitJob(id, el.value);
+        };
+        window.changeTeamWrapper = (id, el) => {
+            const newTeam = el.value;
+            // Check Limit for Table Edit
+            if(canJoinTeam(newTeam)) {
+                updateUnitTeam(id, newTeam);
+            } else {
+                // Revert select to old value if rejected
+                const oldP = players.find(p => p.id === id);
+                el.value = oldP.team; 
+            }
+        };
 
         // --- UI LOGIC ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -510,8 +584,15 @@
                         const pid = evt.item.dataset.id;
                         const newTeam = evt.to.dataset.team;
                         const oldTeam = evt.from.dataset.team;
+                        
                         if(pid && newTeam !== oldTeam) {
-                            updateUnitTeam(pid, newTeam);
+                            // Check Limit for Drag & Drop
+                            if(canJoinTeam(newTeam)) {
+                                updateUnitTeam(pid, newTeam);
+                            } else {
+                                // Revert visual move
+                                evt.from.appendChild(evt.item); 
+                            }
                         }
                     }
                 });
@@ -521,6 +602,7 @@
         function renderBoard() {
             TEAMS.forEach(t => {
                 const laneEl = document.getElementById(`lane-${t.id}`);
+                // Simple Diff Check or Clear - Clearing is safer for small lists
                 laneEl.innerHTML = ''; 
                 
                 const teamPlayers = players.filter(p => p.team === t.id);
@@ -544,6 +626,10 @@
         function renderList() {
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = '';
+            
+            // Get Job Options Template
+            const jobTemplate = document.getElementById('hidden-job-template').innerHTML;
+
             const sorted = [...players].sort((a,b) => {
                 const idxA = TEAMS.findIndex(t => t.id === a.team);
                 const idxB = TEAMS.findIndex(t => t.id === b.team);
@@ -551,13 +637,31 @@
             });
 
             sorted.forEach(p => {
-                const team = TEAMS.find(t => t.id === p.team);
                 const info = getJobInfo(p.job);
+                
+                // Construct Team Options
+                let teamOpts = '';
+                TEAMS.forEach(t => {
+                    teamOpts += `<option value="${t.id}" ${p.team === t.id ? 'selected' : ''}>${t.label}</option>`;
+                });
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td style="font-weight:600; color:white;">${p.name}</td>
-                    <td>${p.job}</td>
-                    <td><span class="tag-team" style="background:${team.color}20; color:${team.color}">${team.label}</span></td>
+                    
+                    <td>
+                        <select class="table-select" onchange="window.changeJobWrapper('${p.id}', this)">
+                            <option value="${p.job}" hidden>${p.job}</option>
+                            ${jobTemplate}
+                        </select>
+                    </td>
+
+                    <td>
+                        <select class="table-select" style="color:${TEAMS.find(t=>t.id===p.team)?.color}" onchange="window.changeTeamWrapper('${p.id}', this)">
+                            ${teamOpts}
+                        </select>
+                    </td>
+                    
                     <td><span class="card-badge ${info.style}">${info.cat}</span></td>
                     <td style="text-align:right">
                         <button class="btn-ghost" style="padding:4px 8px; color:var(--danger); border:none;" onclick="window.deleteUnitWrapper('${p.id}')">
@@ -572,8 +676,16 @@
         function copyDiscord() {
             let txt = "**🚨 ELITE OPS ROSTER**\n";
             txt += `*Updated: ${new Date().toLocaleTimeString()}*\n────────────────\n`;
+            
+            let totalActive = 0;
+
             TEAMS.forEach(t => {
+                // SKIP RESERVE (Request #1)
+                if(t.id === 'res') return; 
+
                 const list = players.filter(p => p.team === t.id);
+                totalActive += list.length;
+
                 txt += `\n**${t.label.toUpperCase()}** [${list.length}]\n`;
                 if(list.length > 0) {
                     txt += "```\n";
@@ -585,8 +697,11 @@
                     txt += "> *Empty*\n";
                 }
             });
+            
+            txt += `\nTotal Active Personnel: ${totalActive}`;
+
             navigator.clipboard.writeText(txt);
-            alert('Copied to Clipboard!');
+            alert(`Copied to Clipboard! (Reserves excluded)`);
         }
 
         // --- VIEW SWITCHER ---
@@ -606,7 +721,7 @@
             });
         }
 
-        // --- MAP LOGIC (Restored Local Files) ---
+        // --- MAP LOGIC ---
         let painting = false;
         let penColor = '#ef4444';
         const canvas = document.getElementById('draw-canvas');
@@ -661,5 +776,4 @@
 
     </script>
 </body>
-
 </html>
