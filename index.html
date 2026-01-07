@@ -468,9 +468,10 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th style="width:25%">Unit Name</th>
-                            <th style="width:25%">Job / Specialization</th>
-                            <th style="width:25%">Squad Assignment</th>
+                            <th style="width:20%">Unit Name</th>
+                            <th style="width:20%">Job / Specialization</th>
+                            <th style="width:15%">Rating</th>
+                            <th style="width:20%">Squad Assignment</th>
                             <th style="width:15%">Class</th>
                             <th style="width:10%; text-align:right">Opt</th>
                         </tr>
@@ -574,7 +575,7 @@
                         </div>
                     </div>
                     <div>
-                        <label style="color:var(--text-muted); font-size:0.8rem; display:block; margin-bottom:5px;">Crit Rate (%)</label>
+                        <label style="color:var(--text-muted); font-size:0.8rem; display:block; margin-bottom:5px;">Crit Chance (%)</label>
                         <div class="input-group-merged">
                             <i class="fa-solid fa-bullseye" style="padding-left:10px; color:var(--warn)"></i>
                             <input type="number" id="in-crit-rate" class="input-dark" style="width:100%">
@@ -979,7 +980,14 @@
                 const laneEl = document.getElementById(`lane-${t.id}`);
                 laneEl.innerHTML = ''; 
                 
-                const teamPlayers = players.filter(p => p.team === t.id);
+                const teamPlayers = players
+                    .filter(p => p.team === t.id)
+                    .sort((a, b) => {
+                        const scoreA = calculateCombatRating(a.stats);
+                        const scoreB = calculateCombatRating(b.stats);
+                        return scoreB - scoreA;
+                    });
+
                 document.getElementById(`cnt-${t.id}`).innerText = teamPlayers.length;
 
                 teamPlayers.forEach(p => {
@@ -1038,12 +1046,14 @@
             });
 
             if(sorted.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:var(--text-muted);">No units match filters.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--text-muted);">No units match filters.</td></tr>`;
                 return;
             }
 
             sorted.forEach(p => {
                 const info = getJobInfo(p.job);
+                const cp = calculateCombatRating(p.stats);
+
                 let teamOpts = '';
                 TEAMS.forEach(t => {
                     teamOpts += `<option value="${t.id}" ${p.team === t.id ? 'selected' : ''}>${t.label}</option>`;
@@ -1060,6 +1070,10 @@
                             <option value="${p.job}" hidden>${p.job}</option>
                             ${jobTemplate}
                         </select>
+                    </td>
+
+                    <td style="color:#facc15; font-weight:700; font-family:var(--font-head); letter-spacing:1px;">
+                        <i class="fa-solid fa-bolt" style="margin-right:5px; font-size:0.8em;"></i> ${cp.toLocaleString()}
                     </td>
 
                     <td>
