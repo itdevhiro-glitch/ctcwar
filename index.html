@@ -254,7 +254,46 @@
         .table-select:focus { border-color: var(--accent); background: #020617; }
         .table-select option { background: #0f172a; color: #fff; padding: 10px;}
 
-        .map-wrapper { flex: 1; position: relative; display: flex; flex-direction: column; background: #000; }
+        .map-body-layout {
+            display: flex; flex: 1; height: calc(100% - 60px); overflow: hidden;
+        }
+
+        .icon-sidebar {
+            width: 70px; background: var(--bg-sidebar); border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; align-items: center; gap: 15px; padding: 20px 0;
+            overflow-y: auto; z-index: 20;
+        }
+
+        .icon-draggable {
+            width: 45px; height: 45px; background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; cursor: grab; transition: all 0.2s; color: var(--text-muted);
+        }
+        .icon-draggable:hover {
+            background: var(--accent); color: white; transform: scale(1.1);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .map-icon-placed {
+            position: absolute; width: 34px; height: 34px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; cursor: grab; 
+            z-index: 50; 
+            transform: translate(-50%, -50%);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6));
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+        .map-icon-placed:active { cursor: grabbing; }
+        .map-icon-placed:hover { transform: translate(-50%, -50%) scale(1.1); filter: drop-shadow(0 0 8px currentColor); }
+
+        .ico-ally { color: #3b82f6; }
+        .ico-enemy { color: #ef4444; }
+        .ico-obj { color: #f59e0b; }
+        .ico-special { color: #d946ef; }
+
         .map-tools {
             height: 60px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border);
             display: flex; align-items: center; gap: 20px; padding: 0 30px; z-index: 10;
@@ -265,8 +304,9 @@
             background: radial-gradient(#1e293b 1px, transparent 1px) 0 0 / 20px 20px;
             background-color: #020617;
         }
-        #map-img { max-width: 100%; max-height: 100%; pointer-events: none; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
-        #draw-canvas { position: absolute; inset: 0; cursor: crosshair; }
+        #map-img { max-width: 100%; max-height: 100%; pointer-events: none; box-shadow: 0 0 50px rgba(0,0,0,0.5); z-index: 10; }
+        #draw-canvas { position: absolute; inset: 0; cursor: crosshair; z-index: 20; }
+        #icon-layer { position:absolute; inset:0; pointer-events:none; z-index: 50; }
         
         .color-dot { 
             width: 24px; height: 24px; border-radius: 50%; cursor: pointer; 
@@ -280,7 +320,7 @@
         .c-gather { border-left-color: var(--warn); }
         .c-craft { border-left-color: var(--purple); }
         
-        .bg-soft-wpn { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+        .bg-soft-wpn { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
         .bg-soft-bio { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
         .bg-soft-gather { background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1px solid rgba(245,158,11,0.3); }
         .bg-soft-craft { background: rgba(217, 70, 239, 0.2); color: #f0abfc; border: 1px solid rgba(217,70,239,0.3); }
@@ -446,27 +486,52 @@
                     <i class="fa-solid fa-map-location-dot" style="color:var(--text-muted); margin-right:10px;"></i>
                     <select id="map-select" class="input-dark" style="background:var(--bg-input); border:1px solid var(--border); padding:8px;">
                         <option value="overview.jpg">Global Overview</option>
-                        <option value="Kota1.jpg">Sector A (Charles Town West)</option>
-                        <option value="kota2.jpg">Sector B (Charles Town East)</option>
+                        <option value="Kota1.jpg">Sector A (West)</option>
+                        <option value="kota2.jpg">Sector B (East)</option>
                         <option value="Nuclear.jpg">Nuclear Plant</option>
-                        <option value="mercu.jpg">Mercu Tower (Quary)</option>
+                        <option value="mercu.jpg">Mercu Tower</option>
                     </select>
                 </div>
                 
                 <div class="divider-v"></div>
                 
-                <div class="color-dot active" style="background:var(--danger)" data-color="#ef4444" title="Enemy / Danger"></div>
-                <div class="color-dot" style="background:var(--accent)" data-color="#3b82f6" title="Ally / Move"></div>
-                <div class="color-dot" style="background:var(--success)" data-color="#10b981" title="Safe / Objective"></div>
-                <div class="color-dot" style="background:var(--warn)" data-color="#f59e0b" title="Caution"></div>
+                <div class="color-dot active" style="background:var(--danger)" data-color="#ef4444" title="Pen: Enemy (Red)"></div>
+                <div class="color-dot" style="background:var(--accent)" data-color="#3b82f6" title="Pen: Ally (Blue)"></div>
+                <div class="color-dot" style="background:var(--success)" data-color="#10b981" title="Pen: Safe (Green)"></div>
+                <div class="color-dot" style="background:var(--warn)" data-color="#f59e0b" title="Pen: Caution (Yellow)"></div>
                 
                 <div style="flex:1"></div>
-                <button class="btn btn-ghost" id="btn-clear-map"><i class="fa-solid fa-eraser"></i> Clear Tactics</button>
+                <button class="btn btn-ghost" id="btn-clear-icons" style="margin-right:10px;"><i class="fa-solid fa-trash-can"></i> Icons</button>
+                <button class="btn btn-ghost" id="btn-clear-map"><i class="fa-solid fa-eraser"></i> Drawing</button>
             </div>
             
-            <div class="map-canvas-box" id="map-box">
-                <img id="map-img" src="" alt="Select a Map Region">
-                <canvas id="draw-canvas"></canvas>
+            <div class="map-body-layout">
+                <div class="icon-sidebar">
+                    <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:5px;">Units</div>
+                    
+                    <div class="icon-draggable ico-ally" draggable="true" data-type="commander" title="Commander"><i class="fa-solid fa-crown"></i></div>
+                    <div class="icon-draggable ico-ally" draggable="true" data-type="attacker" title="Attacker Squad"><i class="fa-solid fa-person-rifle"></i></div>
+                    <div class="icon-draggable ico-ally" draggable="true" data-type="defender" title="Defender"><i class="fa-solid fa-shield-halved"></i></div>
+                    
+                    <div style="width:30px; height:1px; background:var(--border); margin:5px 0;"></div>
+                    <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:5px;">Enemy</div>
+        
+                    <div class="icon-draggable ico-enemy" draggable="true" data-type="enemy-unit" title="Enemy Unit"><i class="fa-solid fa-skull"></i></div>
+                    <div class="icon-draggable ico-enemy" draggable="true" data-type="enemy-sniper" title="Enemy Beacon"><i class="fa-solid fa-crosshairs"></i></div>
+                    
+                    <div style="width:30px; height:1px; background:var(--border); margin:5px 0;"></div>
+                    <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:5px;">Object</div>
+        
+                    <div class="icon-draggable ico-obj" draggable="true" data-type="beacon" title="Beacon"><i class="fa-solid fa-tower-broadcast"></i></div>
+                    <div class="icon-draggable ico-special" draggable="true" data-type="airdrop" title="Airdrop"><i class="fa-solid fa-parachute-box"></i></div>
+                    <div class="icon-draggable ico-obj" draggable="true" data-type="transmitter" title="Transmitter"><i class="fa-solid fa-satellite-dish"></i></div>
+                </div>
+        
+                <div class="map-canvas-box" id="map-box">
+                    <img id="map-img" src="" alt="Select a Map Region">
+                    <div id="icon-layer"></div>
+                    <canvas id="draw-canvas"></canvas>
+                </div>
             </div>
         </div>
 
@@ -482,6 +547,78 @@
             <div style="display:flex; justify-content:flex-end; gap:10px;">
                 <button class="btn btn-ghost" id="btn-close-bulk">Cancel</button>
                 <button class="btn btn-primary" id="btn-process-bulk">Start Import</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-detail">
+        <div class="modal-content" style="width: 600px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:15px;">
+                <div>
+                    <h3 id="d-name" style="font-family:var(--font-head); font-size:1.8rem; color:white; margin-bottom:5px;">UNIT NAME</h3>
+                    <span id="d-job" class="card-badge bg-soft-wpn">JOB CLASS</span>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:0.8rem; color:var(--text-muted);">COMBAT RATING</div>
+                    <div id="d-score" style="font-size:1.4rem; font-weight:700; color:var(--accent);">0</div>
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:25px;">
+                <div style="display:flex; flex-direction:column; gap:15px;">
+                    <div>
+                        <label style="color:var(--text-muted); font-size:0.8rem; display:block; margin-bottom:5px;">Attack Power</label>
+                        <div class="input-group-merged">
+                            <i class="fa-solid fa-khanda" style="padding-left:10px; color:var(--danger)"></i>
+                            <input type="number" id="in-atk" class="input-dark" style="width:100%">
+                        </div>
+                    </div>
+                    <div>
+                        <label style="color:var(--text-muted); font-size:0.8rem; display:block; margin-bottom:5px;">Crit Rate (%)</label>
+                        <div class="input-group-merged">
+                            <i class="fa-solid fa-bullseye" style="padding-left:10px; color:var(--warn)"></i>
+                            <input type="number" id="in-crit-rate" class="input-dark" style="width:100%">
+                        </div>
+                    </div>
+                    <div>
+                        <label style="color:var(--text-muted); font-size:0.8rem; display:block; margin-bottom:5px;">Crit Dmg Bonus (%)</label>
+                        <div class="input-group-merged">
+                            <i class="fa-solid fa-burst" style="padding-left:10px; color:var(--warn)"></i>
+                            <input type="number" id="in-crit-dmg" class="input-dark" style="width:100%">
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:15px;">
+                    <div>
+                        <label style="color:var(--text-muted); font-size:0.8rem; display:block; margin-bottom:5px;">Armor / Def</label>
+                        <div class="input-group-merged">
+                            <i class="fa-solid fa-shield" style="padding-left:10px; color:var(--accent)"></i>
+                            <input type="number" id="in-def" class="input-dark" style="width:100%">
+                        </div>
+                    </div>
+                    <div>
+                        <label style="color:var(--text-muted); font-size:0.8rem; display:block; margin-bottom:5px;">Dmg Reduction (%)</label>
+                        <div class="input-group-merged">
+                            <i class="fa-solid fa-shield-virus" style="padding-left:10px; color:var(--success)"></i>
+                            <input type="number" id="in-dmg-red" class="input-dark" style="width:100%">
+                        </div>
+                    </div>
+                    <div>
+                        <label style="color:var(--text-muted); font-size:0.8rem; display:block; margin-bottom:5px;">Crit Immunity (%)</label>
+                        <div class="input-group-merged">
+                            <i class="fa-solid fa-heart-crack" style="padding-left:10px; color:var(--purple)"></i>
+                            <input type="number" id="in-crit-res" class="input-dark" style="width:100%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <input type="hidden" id="d-uid">
+
+            <div style="display:flex; justify-content:flex-end; gap:10px; border-top:1px solid var(--border); padding-top:20px;">
+                <button class="btn btn-ghost" id="btn-close-detail">Cancel</button>
+                <button class="btn btn-primary" id="btn-save-detail">Save Attributes</button>
             </div>
         </div>
     </div>
@@ -561,6 +698,26 @@
             CRAFT:  ['gunmaker', 'armorer', 'upholster']
         };
 
+        function calculateCombatRating(stats) {
+            if (!stats) return 0;
+            
+            const atk = parseInt(stats.atk) || 0;
+            const def = parseInt(stats.def) || 0;
+            const cr  = parseInt(stats.crit_rate) || 0;
+            const cd  = parseInt(stats.crit_dmg) || 0;
+            const dr  = parseInt(stats.dmg_red) || 0;
+            const ci  = parseInt(stats.crit_res) || 0;
+
+            let score = (atk * 1) + 
+                        (def * 2.5) + 
+                        (cr * 20) + 
+                        (cd * 5) + 
+                        (dr * 25) + 
+                        (ci * 10);
+            
+            return Math.floor(score); 
+        }
+
         function initRealtimeData() {
             if(!currentUser) return;
             
@@ -583,6 +740,14 @@
                 name: name,
                 job: job,
                 team: 'res',
+                stats: {
+                    atk: 0,
+                    def: 0,
+                    crit_rate: 0,
+                    crit_dmg: 0,
+                    dmg_red: 0,
+                    crit_res: 0
+                },
                 createdAt: Date.now()
             });
         }
@@ -615,6 +780,59 @@
             }
             return true;
         }
+
+        window.openDetailWrapper = (id) => {
+            const p = players.find(u => u.id === id);
+            if(!p) return;
+
+            document.getElementById('d-name').innerText = p.name;
+            document.getElementById('d-job').innerText = p.job;
+            document.getElementById('d-uid').value = p.id;
+
+            const info = getJobInfo(p.job);
+            const badge = document.getElementById('d-job');
+            badge.className = `card-badge ${info.style}`;
+
+            const s = p.stats || { atk:0, def:0, crit_rate:0, crit_dmg:0, dmg_red:0, crit_res:0 };
+            
+            document.getElementById('in-atk').value = s.atk;
+            document.getElementById('in-def').value = s.def;
+            document.getElementById('in-crit-rate').value = s.crit_rate;
+            document.getElementById('in-crit-dmg').value = s.crit_dmg;
+            document.getElementById('in-dmg-red').value = s.dmg_red;
+            document.getElementById('in-crit-res').value = s.crit_res;
+
+            const score = calculateCombatRating(s);
+            document.getElementById('d-score').innerText = score.toLocaleString(); 
+
+            document.getElementById('modal-detail').style.display = 'flex';
+        };
+
+        document.getElementById('btn-save-detail').addEventListener('click', async () => {
+            const uid = document.getElementById('d-uid').value;
+            const btn = document.getElementById('btn-save-detail');
+            
+            const newStats = {
+                atk: document.getElementById('in-atk').value || 0,
+                def: document.getElementById('in-def').value || 0,
+                crit_rate: document.getElementById('in-crit-rate').value || 0,
+                crit_dmg: document.getElementById('in-crit-dmg').value || 0,
+                dmg_red: document.getElementById('in-dmg-red').value || 0,
+                crit_res: document.getElementById('in-crit-res').value || 0,
+            };
+
+            btn.innerText = "Saving...";
+            
+            const unitRef = doc(db, "users", currentUser.uid, "units", uid);
+            await updateDoc(unitRef, { stats: newStats });
+
+            document.getElementById('modal-detail').style.display = 'none';
+            btn.innerText = "Save Attributes";
+        });
+
+        document.getElementById('btn-close-detail').addEventListener('click', () => {
+            document.getElementById('modal-detail').style.display = 'none';
+        });
 
         document.getElementById('btn-bulk').addEventListener('click', () => {
             document.getElementById('modal-bulk').style.display = 'flex';
@@ -766,15 +984,26 @@
 
                 teamPlayers.forEach(p => {
                     const info = getJobInfo(p.job);
+                    
+                    const cp = calculateCombatRating(p.stats); 
+
                     const card = document.createElement('div');
                     card.className = `card ${info.border}`;
                     card.dataset.id = p.id;
+                    
                     card.innerHTML = `
                         <div class="card-name">
-                            ${p.name} 
+                            <span onclick="window.openDetailWrapper('${p.id}')" style="cursor:pointer; border-bottom:1px dotted var(--text-muted)">${p.name}</span>
                             <i class="fa-solid fa-xmark" style="color:var(--text-muted); cursor:pointer; font-size:0.9em" onclick="window.deleteUnitWrapper('${p.id}')"></i>
                         </div>
-                        <div class="card-job">${p.job}</div>
+                        <div class="card-job" onclick="window.openDetailWrapper('${p.id}')" style="cursor:pointer">
+                            ${p.job} 
+                            
+                            <span style="float:right; color:#facc15; font-weight:700; font-size:0.9em" title="Combat Rating">
+                                <i class="fa-solid fa-bolt"></i> ${cp.toLocaleString()}
+                            </span>
+
+                        </div>
                         <span class="card-badge ${info.style}">${info.cat}</span>
                     `;
                     laneEl.appendChild(card);
@@ -840,8 +1069,11 @@
                     </td>
                     
                     <td><span class="card-badge ${info.style}">${info.cat}</span></td>
-                    <td style="text-align:right">
-                        <button class="btn-ghost" style="padding:6px 10px; color:var(--text-muted); border:none;" onclick="window.deleteUnitWrapper('${p.id}')">
+                    <td style="text-align:right; white-space:nowrap;">
+                        <button class="btn-ghost" style="padding:6px 10px; color:var(--accent); border:none; margin-right:5px;" onclick="window.openDetailWrapper('${p.id}')" title="View Stats">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                        <button class="btn-ghost" style="padding:6px 10px; color:var(--text-muted); border:none;" onclick="window.deleteUnitWrapper('${p.id}')" title="Delete">
                             <i class="fa-solid fa-trash"></i>
                         </button>
                     </td>
@@ -925,6 +1157,91 @@
             window.addEventListener('resize', resizeCanvas);
             img.onload = resizeCanvas;
             changeMap();
+
+            setupIconDragDrop();
+            
+            document.getElementById('btn-clear-icons').addEventListener('click', () => {
+                if(confirm("Remove all tactical icons?")) {
+                    document.getElementById('icon-layer').innerHTML = '';
+                }
+            });
+        }
+
+        let currentDragId = null;
+
+        function setupIconDragDrop() {
+            const draggables = document.querySelectorAll('.icon-draggable');
+            const mapContainer = document.getElementById('map-box');
+            
+            draggables.forEach(icon => {
+                icon.addEventListener('dragstart', (e) => {
+                    currentDragId = null; 
+                    e.dataTransfer.setData('type', icon.dataset.type);
+                    e.dataTransfer.setData('html', icon.innerHTML);
+                    e.dataTransfer.setData('colorClass', Array.from(icon.classList).find(c => c.startsWith('ico-')));
+                    e.dataTransfer.effectAllowed = 'copy';
+                });
+            });
+
+            mapContainer.addEventListener('dragover', (e) => {
+                e.preventDefault(); 
+                e.dataTransfer.dropEffect = currentDragId ? 'move' : 'copy';
+            });
+
+            mapContainer.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const rect = mapContainer.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                if (currentDragId) {
+                    const existingEl = document.getElementById(currentDragId);
+                    if(existingEl) {
+                        existingEl.style.left = x + 'px';
+                        existingEl.style.top = y + 'px';
+                    }
+                } else {
+                    const type = e.dataTransfer.getData('type');
+                    const html = e.dataTransfer.getData('html');
+                    const colorClass = e.dataTransfer.getData('colorClass');
+                    if(type) {
+                        createMapIcon(x, y, html, colorClass);
+                    }
+                }
+                currentDragId = null;
+            });
+        }
+
+        function createMapIcon(x, y, iconHtml, colorClass) {
+            const iconLayer = document.getElementById('icon-layer');
+            const el = document.createElement('div');
+            el.className = `map-icon-placed ${colorClass || ''}`;
+            el.innerHTML = iconHtml;
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            el.id = 'map-icon-' + Date.now(); 
+            
+            el.style.pointerEvents = 'auto'; 
+            el.draggable = true;
+
+            el.addEventListener('dragstart', (e) => {
+                currentDragId = el.id;
+                e.dataTransfer.effectAllowed = 'move';
+                setTimeout(() => el.style.display = 'none', 0);
+            });
+            
+            el.addEventListener('dragend', (e) => {
+                currentDragId = null;
+                el.style.display = 'flex';
+            });
+
+            el.addEventListener('dblclick', (e) => {
+                e.stopPropagation(); 
+                el.remove();
+            });
+            
+            el.title = "Drag to move, Double click to delete";
+            iconLayer.appendChild(el);
         }
 
         function changeMap() {
@@ -954,6 +1271,3 @@
     </script>
 </body>
 </html>
-
-
-
