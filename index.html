@@ -359,7 +359,15 @@
         }
 
         .comp-container { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
-        .comp-selector-area { width: 100%; max-width: 900px; display: flex; gap: 20px; margin-bottom: 30px; justify-content: center; }
+        .comp-selector-area { 
+            width: 100%; 
+            max-width: 900px; 
+            display: flex; 
+            gap: 20px; 
+            margin: 0 auto 30px auto; 
+            justify-content: center; 
+            align-items: center; 
+        }
         
         @media (max-width: 1200px) { .board-container { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 768px) { .board-container { grid-template-columns: 1fr; } .sidebar { width: 60px; } .top-bar { padding: 0 15px; } .page-title { font-size: 1.2rem; } }
