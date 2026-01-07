@@ -254,6 +254,29 @@
         .table-select:focus { border-color: var(--accent); background: #020617; }
         .table-select option { background: #0f172a; color: #fff; padding: 10px;}
 
+        .sortable-th { 
+            cursor: pointer; 
+            transition: background 0.2s; 
+            user-select: none;
+        }
+        .sortable-th:hover { 
+            background: #1e293b; 
+            color: var(--accent); 
+        }
+        .sort-icon {
+            display: inline-block;
+            margin-left: 8px;
+            font-size: 0.8em;
+            opacity: 0.5;
+        }
+        .sortable-th.active-sort {
+            color: var(--accent);
+            border-bottom: 2px solid var(--accent) !important;
+        }
+        .sortable-th.active-sort .sort-icon {
+            opacity: 1;
+        }
+
         .map-body-layout {
             display: flex; flex: 1; height: calc(100% - 60px); overflow: hidden;
         }
@@ -496,11 +519,21 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th style="width:20%">Unit Name</th>
-                            <th style="width:20%">Job / Specialization</th>
-                            <th style="width:15%">Rating</th>
-                            <th style="width:20%">Squad Assignment</th>
-                            <th style="width:15%">Class</th>
+                            <th class="sortable-th" onclick="window.toggleSort('name')" style="width:20%">
+                                Unit Name <span id="sort-icon-name" class="sort-icon"><i class="fa-solid fa-sort"></i></span>
+                            </th>
+                            <th class="sortable-th" onclick="window.toggleSort('job')" style="width:20%">
+                                Job / Specialization <span id="sort-icon-job" class="sort-icon"><i class="fa-solid fa-sort"></i></span>
+                            </th>
+                            <th class="sortable-th" onclick="window.toggleSort('rating')" style="width:15%">
+                                Rating <span id="sort-icon-rating" class="sort-icon"><i class="fa-solid fa-sort"></i></span>
+                            </th>
+                            <th class="sortable-th" onclick="window.toggleSort('team')" style="width:20%">
+                                Squad Assignment <span id="sort-icon-team" class="sort-icon"><i class="fa-solid fa-sort"></i></span>
+                            </th>
+                            <th class="sortable-th" onclick="window.toggleSort('class')" style="width:15%">
+                                Class <span id="sort-icon-class" class="sort-icon"><i class="fa-solid fa-sort"></i></span>
+                            </th>
                             <th style="width:10%; text-align:right">Opt</th>
                         </tr>
                     </thead>
@@ -761,6 +794,7 @@
         let currentUser = null;
         let players = []; 
         let unsubscribe = null; 
+        let currentSort = { key: 'name', asc: true };
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -985,6 +1019,16 @@
             }
         };
 
+        window.toggleSort = (key) => {
+            if (currentSort.key === key) {
+                currentSort.asc = !currentSort.asc;
+            } else {
+                currentSort.key = key;
+                currentSort.asc = key === 'rating' ? false : true; 
+            }
+            renderList();
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
             initBoardLanes();
             setupViewSwitcher();
@@ -1146,7 +1190,7 @@
 
             const jobTemplate = document.getElementById('hidden-job-template').innerHTML;
 
-            const filtered = players.filter(p => {
+            let processedData = players.filter(p => {
                 const info = getJobInfo(p.job);
                 const matchName = p.name.toLowerCase().includes(fName);
                 const matchTeam = (fTeam === 'ALL') ? true : p.team === fTeam;
@@ -1155,18 +1199,55 @@
                 return matchName && matchTeam && matchClass && matchJob;
             });
 
-            const sorted = filtered.sort((a,b) => {
-                const idxA = TEAMS.findIndex(t => t.id === a.team);
-                const idxB = TEAMS.findIndex(t => t.id === b.team);
-                return idxA - idxB;
+            processedData.sort((a, b) => {
+                let valA, valB;
+                
+                switch(currentSort.key) {
+                    case 'name':
+                        valA = a.name.toLowerCase();
+                        valB = b.name.toLowerCase();
+                        break;
+                    case 'job':
+                        valA = a.job.toLowerCase();
+                        valB = b.job.toLowerCase();
+                        break;
+                    case 'rating':
+                        valA = calculateCombatRating(a.stats);
+                        valB = calculateCombatRating(b.stats);
+                        break;
+                    case 'team':
+                        valA = TEAMS.findIndex(t => t.id === a.team);
+                        valB = TEAMS.findIndex(t => t.id === b.team);
+                        break;
+                    case 'class':
+                        valA = getJobInfo(a.job).cat;
+                        valB = getJobInfo(b.job).cat;
+                        break;
+                    default:
+                        valA = 0; valB = 0;
+                }
+
+                if (valA < valB) return currentSort.asc ? -1 : 1;
+                if (valA > valB) return currentSort.asc ? 1 : -1;
+                return 0;
             });
 
-            if(sorted.length === 0) {
+            document.querySelectorAll('.sortable-th').forEach(th => th.classList.remove('active-sort'));
+            document.querySelectorAll('.sort-icon i').forEach(i => i.className = 'fa-solid fa-sort');
+
+            const activeIcon = document.getElementById(`sort-icon-${currentSort.key}`);
+            if(activeIcon) {
+                activeIcon.parentElement.classList.add('active-sort');
+                const iconEl = activeIcon.querySelector('i');
+                iconEl.className = currentSort.asc ? 'fa-solid fa-sort-up' : 'fa-solid fa-sort-down';
+            }
+
+            if(processedData.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--text-muted);">No units match filters.</td></tr>`;
                 return;
             }
 
-            sorted.forEach(p => {
+            processedData.forEach(p => {
                 const info = getJobInfo(p.job);
                 const cp = calculateCombatRating(p.stats);
 
