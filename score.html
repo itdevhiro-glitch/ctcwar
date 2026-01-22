@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mahōteikoku Status Registry</title>
+    <title>Mahōteikoku Status Registry - Elite</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;800&family=Sorts+Mill+Goudy:ital@0;1&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -14,6 +14,8 @@
             --royal-gold-dark: #8a733e;
             --royal-red: #800020;
             --royal-blue: #1a237e;
+            --premium-purple: #4a148c;
+            --premium-black: #121212;
         }
 
         body {
@@ -51,62 +53,37 @@
             z-index: 10;
         }
 
-        .panel-header {
-            text-align: center;
-            border-bottom: 2px solid var(--royal-gold);
-            margin-bottom: 15px;
-            padding-bottom: 5px;
-        }
+        .panel-header { text-align: center; border-bottom: 2px solid var(--royal-gold); margin-bottom: 15px; padding-bottom: 5px; }
         .panel-header h2 { margin: 0; font-family: 'Cinzel Decorative', cursive; font-size: 16px; color: var(--royal-red); }
 
         .input-row { display: flex; gap: 10px; }
         .input-group { margin-bottom: 10px; flex: 1; }
-        
         label { display: block; font-size: 10px; font-weight: bold; color: var(--royal-gold-dark); margin-bottom: 3px; letter-spacing: 1px; }
-        
         input[type="text"], input[type="number"] {
-            width: 100%; padding: 10px;
-            background: rgba(0,0,0,0.03);
+            width: 100%; padding: 10px; background: rgba(0,0,0,0.03);
             border: 1px solid #ccc; border-bottom: 2px solid var(--royal-gold);
             font-family: 'Sorts Mill Goudy', serif; font-size: 16px; font-weight: bold;
-            box-sizing: border-box; color: var(--ink-main);
-            border-radius: 4px;
+            box-sizing: border-box; color: var(--ink-main); border-radius: 4px;
         }
         input:focus { outline: none; background: rgba(198, 166, 100, 0.1); border-color: var(--royal-red); }
 
         .file-upload-btn {
-            display: block; width: 100%; padding: 12px;
-            text-align: center; border: 2px dashed var(--royal-gold);
+            display: block; width: 100%; padding: 12px; text-align: center; border: 2px dashed var(--royal-gold);
             background: rgba(255, 255, 255, 0.5); color: var(--royal-gold-dark);
-            cursor: pointer; font-size: 12px; font-weight: bold;
-            box-sizing: border-box;
+            cursor: pointer; font-size: 12px; font-weight: bold; box-sizing: border-box;
         }
 
         .btn-main {
-            width: 100%; padding: 14px; margin-top: 10px;
-            background: var(--royal-red); color: #fff; border: none;
-            font-family: 'Cinzel Decorative', cursive; font-size: 14px;
-            cursor: pointer; border-radius: 4px;
-            box-shadow: 0 4px 0 #5a0016;
-            transition: 0.1s;
+            width: 100%; padding: 14px; margin-top: 10px; background: var(--royal-red); color: #fff; border: none;
+            font-family: 'Cinzel Decorative', cursive; font-size: 14px; cursor: pointer; border-radius: 4px;
+            box-shadow: 0 4px 0 #5a0016; transition: 0.1s;
         }
         .btn-main:active { transform: translateY(4px); box-shadow: 0 0 0 #5a0016; }
-        
         .btn-dl { background: var(--royal-gold); color: #2e2e2e; display: none; margin-top: 10px; box-shadow: 0 4px 0 #8a733e; }
         .btn-dl:active { box-shadow: 0 0 0 #8a733e; }
 
-        .card-preview-container {
-            width: 100%;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            padding-bottom: 20px;
-        }
-        
-        .card-scaler {
-            transform-origin: top center;
-            transition: transform 0.3s ease;
-        }
+        .card-preview-container { width: 100%; overflow: hidden; display: flex; justify-content: center; padding-bottom: 20px; }
+        .card-scaler { transform-origin: top center; transition: transform 0.3s ease; }
 
         #royal-card {
             width: 800px; height: 500px;
@@ -114,25 +91,18 @@
             background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
             position: relative;
             box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-            display: flex;
-            padding: 30px;
-            box-sizing: border-box;
+            display: flex; padding: 30px; box-sizing: border-box;
             border: 4px double var(--royal-gold);
             outline: 10px solid var(--ink-main);
         }
 
         .watermark {
-            position: absolute;
-            top: 55%; left: 60%;
+            position: absolute; top: 55%; left: 60%;
             transform: translate(-50%, -50%) rotate(-10deg);
-            font-size: 100px;
-            opacity: 0.04;
-            pointer-events: none;
-            color: var(--royal-red);
-            z-index: 0;
+            font-size: 100px; opacity: 0.04; pointer-events: none;
+            color: var(--royal-red); z-index: 0;
             font-family: 'Cinzel Decorative', cursive;
-            white-space: nowrap;
-            letter-spacing: 10px;
+            white-space: nowrap; letter-spacing: 10px;
         }
 
         .corner-decor { position: absolute; width: 60px; height: 60px; border: 2px solid var(--royal-gold); z-index: 10; }
@@ -140,72 +110,44 @@
         .tr { top: 15px; right: 15px; border-left: none; border-bottom: none; }
         .bl { bottom: 15px; left: 15px; border-right: none; border-top: none; }
         .br { bottom: 15px; right: 15px; border-left: none; border-top: none; }
-        
         .corner-decor::after { content:"⚜"; position:absolute; color:var(--royal-gold); font-size:24px; }
         .tl::after { top:2px; left:2px; } .tr::after { top:2px; right:2px; }
         .bl::after { bottom:2px; left:2px; } .br::after { bottom:2px; right:2px; }
 
         .left-col {
-            width: 260px;
-            border-right: 2px solid rgba(198, 166, 100, 0.4);
-            padding-right: 25px;
-            display: flex; flex-direction: column; align-items: center; text-align: center;
-            z-index: 2;
+            width: 260px; border-right: 2px solid rgba(198, 166, 100, 0.4);
+            padding-right: 25px; display: flex; flex-direction: column; align-items: center; text-align: center; z-index: 2;
         }
-
         .portrait-frame {
-            width: 180px; height: 230px;
-            border: 6px solid var(--royal-gold-dark);
-            box-shadow: 5px 5px 0 rgba(0,0,0,0.1);
-            padding: 4px;
-            background: #fff;
-            margin-bottom: 20px;
+            width: 180px; height: 230px; border: 6px solid var(--royal-gold-dark);
+            box-shadow: 5px 5px 0 rgba(0,0,0,0.1); padding: 4px; background: #fff; margin-bottom: 20px;
         }
-
         .portrait-img { width: 100%; height: 100%; object-fit: cover; filter: sepia(0.3) contrast(1.1); }
-
         .identity-box { width: 100%; }
         .char-name {
-            font-family: 'Cinzel Decorative', cursive;
-            font-size: 26px; color: var(--ink-main);
+            font-family: 'Cinzel Decorative', cursive; font-size: 26px; color: var(--ink-main);
             margin: 0; line-height: 1; border-bottom: 2px solid var(--royal-gold);
-            padding-bottom: 5px; margin-bottom: 5px;
-            word-wrap: break-word;
+            padding-bottom: 5px; margin-bottom: 5px; word-wrap: break-word;
         }
         .char-class { font-family: 'Cinzel', serif; font-size: 12px; color: var(--royal-red); font-weight: bold; letter-spacing: 2px; text-transform: uppercase; }
-
         .guild-seal { margin-top: 15px; border: 1px solid rgba(0,0,0,0.1); padding: 5px; width: 100%; }
         .guild-name { font-size: 11px; font-weight: bold; color: #555; }
-
         .char-quote {
-            margin-top: 20px;
-            font-family: 'Sorts Mill Goudy', serif;
-            font-style: italic;
-            font-size: 13px;
-            color: var(--royal-gold-dark);
-            text-align: center;
-            line-height: 1.4;
+            margin-top: 20px; font-family: 'Sorts Mill Goudy', serif; font-style: italic;
+            font-size: 13px; color: var(--royal-gold-dark); text-align: center; line-height: 1.4;
         }
 
         .right-col { flex: 1; padding-left: 30px; display: flex; flex-direction: column; position: relative; z-index: 1; }
-
+        
         .doc-header {
             display: flex; justify-content: space-between; align-items: flex-end;
             margin-bottom: 5px; padding-bottom: 0;
         }
         .doc-title { font-family: 'Cinzel Decorative', cursive; font-size: 28px; font-weight: 700; color: var(--ink-main); }
         .doc-subtitle { font-size: 10px; color: var(--royal-gold-dark); letter-spacing: 2px; font-weight: bold; }
+        .royal-divider { width: 100%; margin-bottom: 15px; }
 
-        .royal-divider { width: 100%; margin-bottom: 15px; } /* Margin dikurangi dikit */
-
-        /* PERUBAHAN DI SINI: Alignment jadi flex-start dan tambah padding top */
-        .stats-area { 
-            display: flex; 
-            align-items: flex-start; /* Naik ke atas */
-            padding-top: 10px;      /* Jarak dari garis */
-            gap: 20px; 
-            flex: 1; 
-        }
+        .stats-area { display: flex; align-items: flex-start; padding-top: 10px; gap: 20px; flex: 1; }
         
         .radar-wrap {
             position: relative; width: 220px; height: 220px;
@@ -214,15 +156,11 @@
             border-radius: 50%;
         }
 
-        .stats-list { flex: 1; display: flex; flex-direction: column; gap: 10px; padding-top: 10px; } /* Padding top biar sejajar visual sama radar */
+        .stats-list { flex: 1; display: flex; flex-direction: column; gap: 10px; padding-top: 10px; }
         .stat-row { display: flex; align-items: center; gap: 10px; }
         .stat-label { width: 55px; font-size: 10px; font-weight: bold; color: #555; text-transform: uppercase; }
         
-        .bar-track {
-            flex: 1; height: 8px; background: rgba(0,0,0,0.05);
-            border: 1px solid rgba(0,0,0,0.2);
-            position: relative;
-        }
+        .bar-track { flex: 1; height: 8px; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.2); position: relative; }
         .bar-fill {
             height: 100%; width: 0%; transition: width 1s;
             border-right: 2px solid var(--ink-main);
@@ -235,26 +173,34 @@
         .fill-armor { background: #2c3e50; }
         .fill-reduc { background: #27ae60; }
         .fill-immune { background: #7f8c8d; }
-
         .stat-val { width: 45px; text-align: right; font-weight: bold; font-family: 'Sorts Mill Goudy', serif; font-size: 14px; }
 
-        /* PERUBAHAN DI SINI: Naik dari 35px ke 50px */
-        .rank-stamp-area { position: absolute; bottom: 50px; right: 10px; transform: rotate(-15deg); }
-        
+        .rank-stamp-area { position: absolute; bottom: 50px; right: 10px; transform: rotate(-15deg); transition: 0.5s; }
         .wax-seal {
             width: 100px; height: 100px;
             background: radial-gradient(circle at 30% 30%, #e74c3c, #c0392b);
-            border-radius: 50%;
-            border: 4px solid #922b21;
+            border-radius: 50%; border: 4px solid #922b21;
             box-shadow: 3px 3px 5px rgba(0,0,0,0.3), inset 2px 2px 5px rgba(255,255,255,0.2);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             color: rgba(255,255,255,0.9); font-family: 'Cinzel Decorative', cursive;
-            text-shadow: 1px 1px 0 #7b241c;
+            text-shadow: 1px 1px 0 #7b241c; transition: 0.5s;
         }
-        .seal-rank { font-size: 48px; font-weight: 900; line-height: 0.8; }
-        .seal-label { font-size: 10px; font-weight: bold; margin-top: 2px; }
+        .seal-rank { font-size: 40px; font-weight: 900; line-height: 0.8; }
+        .seal-label { font-size: 9px; font-weight: bold; margin-top: 4px; text-transform: uppercase; }
 
-        /* PERUBAHAN DI SINI: Naik dari 35px ke 50px */
+        .seal-gold {
+            background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
+            border-color: #8b6508;
+            color: #4e3600; text-shadow: 1px 1px 0 rgba(255,255,255,0.4);
+        }
+        .seal-void {
+            background: radial-gradient(circle at 30% 30%, #2a2a2a, #000);
+            border-color: #800020;
+            color: #d4ac0d;
+            text-shadow: 0 0 5px rgba(212, 172, 13, 0.5);
+            box-shadow: 0 0 15px rgba(0,0,0,0.8), inset 0 0 10px rgba(128,0,32,0.5);
+        }
+
         .total-power {
             position: absolute; bottom: 50px; left: 0;
             font-family: 'Sorts Mill Goudy', serif; font-size: 14px; font-style: italic; color: #555;
@@ -263,8 +209,7 @@
 
         .legal-footer {
             position: absolute; bottom: -5px; left: 0; width: 100%;
-            border-top: 1px solid rgba(198, 166, 100, 0.4);
-            padding-top: 5px;
+            border-top: 1px solid rgba(198, 166, 100, 0.4); padding-top: 5px;
             display: flex; justify-content: space-between; align-items: center;
         }
         .legal-text { font-size: 7px; color: #777; font-family: sans-serif; letter-spacing: 0.5px; max-width: 60%; text-transform: uppercase; }
@@ -312,16 +257,16 @@
             </div>
 
             <div class="input-row">
-                <div class="input-group"><label>Attack Power</label><input type="number" id="inAtk" placeholder="Max 350"></div>
-                <div class="input-group"><label>Armor</label><input type="number" id="inArmor" placeholder="Max 350"></div>
+                <div class="input-group"><label>Attack Power (Max 350)</label><input type="number" id="inAtk" placeholder="Max 350"></div>
+                <div class="input-group"><label>Armor (Max 350)</label><input type="number" id="inArmor" placeholder="Max 350"></div>
             </div>
             <div class="input-row">
-                <div class="input-group"><label>Damage Bonus (%)</label><input type="number" id="inDmg" placeholder="%"></div>
-                <div class="input-group"><label>Crit Chance (%)</label><input type="number" id="inCrit" placeholder="%"></div>
+                <div class="input-group"><label>Damage Bonus % (Max 200)</label><input type="number" id="inDmg" placeholder="Max 200%"></div>
+                <div class="input-group"><label>Crit Chance % (Max 100)</label><input type="number" id="inCrit" placeholder="Max 100%"></div>
             </div>
             <div class="input-row">
-                <div class="input-group"><label>Dmg Reduction (%)</label><input type="number" id="inReduc" placeholder="%"></div>
-                <div class="input-group"><label>Crit Immune (%)</label><input type="number" id="inImmune" placeholder="%"></div>
+                <div class="input-group"><label>Dmg Reduction % (Max 80)</label><input type="number" id="inReduc" placeholder="Max 80%"></div>
+                <div class="input-group"><label>Crit Immune % (Max 80)</label><input type="number" id="inImmune" placeholder="Max 80%"></div>
             </div>
 
             <button class="btn-main" onclick="updateCard()">Appraise Status</button>
@@ -412,7 +357,7 @@
                         </div>
 
                         <div class="rank-stamp-area">
-                            <div class="wax-seal">
+                            <div class="wax-seal" id="rankSeal">
                                 <div class="seal-rank" id="outRankGrade">?</div>
                                 <div class="seal-label" id="outRankLabel">UNRANKED</div>
                             </div>
@@ -434,6 +379,15 @@
     </div>
 
     <script>
+        // --- LOGIC CONFIGURATION ---
+        // Max Stat dikembalikan ke request awal
+        const MAX_ATK = 350;    
+        const MAX_ARMOR = 350;  
+        const MAX_DMG = 200;    
+        const MAX_CRIT = 100;   
+        const MAX_REDUC = 80;   
+        const MAX_IMMUNE = 80; 
+
         function fitCardToScreen() {
             const scaler = document.getElementById('cardScaler');
             const cardWidth = 800; 
@@ -475,13 +429,14 @@
 
             const labels = ["ATK", "DMG", "C.RES", "D.RES", "ARMOR", "CRIT"];
             const data = [
-                stats.atk / 350,
-                stats.dmg / 200,
-                stats.immune / 80,
-                stats.reduc / 80,
-                stats.armor / 350,
-                stats.crit / 100
+                stats.atk / MAX_ATK,
+                stats.dmg / MAX_DMG,
+                stats.immune / MAX_IMMUNE,
+                stats.reduc / MAX_REDUC,
+                stats.armor / MAX_ARMOR,
+                stats.crit / MAX_CRIT
             ];
+            
             const sides = 6;
             const angleStep = (Math.PI * 2) / sides;
 
@@ -550,30 +505,63 @@
             let reduc = parseInt(document.getElementById('inReduc').value) || 0;
             let immune = parseInt(document.getElementById('inImmune').value) || 0;
 
-            let pAtk = (Math.min(atk, 350) / 350) * 1500;
-            let pArmor = (Math.min(armor, 350) / 350) * 1500;
-            let pDmg = (Math.min(dmg, 200) / 200) * 2000;
-            let pCrit = (Math.min(crit, 100) / 100) * 2500;
-            let pReduc = (Math.min(reduc, 80) / 80) * 1500;
-            let pImmune = (Math.min(immune, 80) / 80) * 1000;
+            // --- SCORE LOGIC (Persulit di Top Tier) ---
+            // Max Total Score Ideal = 12,000 poin
+            // 250 atk/armor adalah ~71% dari Max Stat (350).
+            // Kita atur poin agar 70% stat = Rank S (sekitar 8400 total poin).
+            
+            let pAtk = (Math.min(atk, MAX_ATK) / MAX_ATK) * 2000;
+            let pArmor = (Math.min(armor, MAX_ARMOR) / MAX_ARMOR) * 2000;
+            let pDmg = (Math.min(dmg, MAX_DMG) / MAX_DMG) * 2500;
+            let pCrit = (Math.min(crit, MAX_CRIT) / MAX_CRIT) * 2000;
+            let pReduc = (Math.min(reduc, MAX_REDUC) / MAX_REDUC) * 1750;
+            let pImmune = (Math.min(immune, MAX_IMMUNE) / MAX_IMMUNE) * 1750;
+            
             let totalScore = Math.floor(pAtk + pArmor + pDmg + pCrit + pReduc + pImmune);
 
-            let rank = "F", label = "NOVICE";
-            if (totalScore >= 3000) { rank = "E"; label = "ROOKIE"; }
-            if (totalScore >= 5000) { rank = "D"; label = "VETERAN"; }
-            if (totalScore >= 6000) { rank = "C"; label = "ELITE"; }
+            // --- RANK THRESHOLDS ---
+            // Asumsi rata-rata stat pemain mengisi semua kolom.
+            // 250 di stat utama + stat lain seimbang akan menghasilkan sekitar 8500 poin -> S
+            // Untuk ke SS, harus naik drastis (hampir perfect).
+            
+            let rank = "F", label = "CIVILIAN";
+            let sealClass = "wax-seal"; 
+
+            if (totalScore >= 2500) { rank = "E"; label = "RECRUIT"; }
+            if (totalScore >= 4000) { rank = "D"; label = "SOLDIER"; }
+            if (totalScore >= 5500) { rank = "C"; label = "VETERAN"; }
             if (totalScore >= 7000) { rank = "B"; label = "KNIGHT"; }
-            if (totalScore >= 8000) { rank = "A"; label = "MASTER"; }
-            if (totalScore >= 9000) { rank = "S"; label = "WARLORD"; }
-            if (totalScore >= 9500) { rank = "SS"; label = "LEGEND"; }
+            
+            // Masuk Tier Atas (Hard Mode)
+            if (totalScore >= 8300) { 
+                // Di angka ini (sekitar stat 250), player masuk S
+                rank = "S"; label = "WARLORD"; sealClass = "wax-seal seal-gold"; 
+            }
+            if (totalScore >= 10500) { 
+                // Lompatan jauh dari 8300 ke 10500 (butuh stat mendekati 300++)
+                rank = "SS"; label = "EMPEROR"; sealClass = "wax-seal seal-void"; 
+            } 
+            if (totalScore >= 11600) { 
+                // Butuh stat hampir 350 rata (Perfect)
+                rank = "SSS"; label = "DIVINE"; sealClass = "wax-seal seal-void"; 
+            }
 
             document.getElementById('outGuild').innerText = guild;
             document.getElementById('outName').innerText = name;
             document.getElementById('outRole').innerText = role;
             document.getElementById('outQuote').innerText = quote;
             document.getElementById('outScore').innerText = totalScore.toLocaleString();
-            document.getElementById('outRankGrade').innerText = rank;
-            document.getElementById('outRankLabel').innerText = label;
+            
+            const rGrade = document.getElementById('outRankGrade');
+            const rLabel = document.getElementById('outRankLabel');
+            const rSeal = document.getElementById('rankSeal');
+
+            rGrade.innerText = rank;
+            rLabel.innerText = label;
+            rSeal.className = sealClass;
+
+            if(rank === "SSS") rGrade.style.fontSize = "32px";
+            else rGrade.style.fontSize = "48px";
 
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('outDate').innerText = today;
@@ -585,12 +573,12 @@
                 document.getElementById(idBar).style.width = pct + "%";
             }
             
-            setBar(atk, 350, 'txtAtk', 'barAtk');
-            setBar(dmg, 200, 'txtDmg', 'barDmg', '%');
-            setBar(crit, 100, 'txtCrit', 'barCrit', '%');
-            setBar(armor, 350, 'txtArmor', 'barArmor');
-            setBar(reduc, 80, 'txtReduc', 'barReduc', '%');
-            setBar(immune, 80, 'txtImmune', 'barImmune', '%');
+            setBar(atk, MAX_ATK, 'txtAtk', 'barAtk');
+            setBar(dmg, MAX_DMG, 'txtDmg', 'barDmg', '%');
+            setBar(crit, MAX_CRIT, 'txtCrit', 'barCrit', '%');
+            setBar(armor, MAX_ARMOR, 'txtArmor', 'barArmor');
+            setBar(reduc, MAX_REDUC, 'txtReduc', 'barReduc', '%');
+            setBar(immune, MAX_IMMUNE, 'txtImmune', 'barImmune', '%');
 
             drawRadar({atk, armor, dmg, crit, reduc, immune});
             document.getElementById('btnDl').style.display = "block";
