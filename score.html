@@ -3,30 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guild Card - Clean Tier System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+    <title>Royal Kingdom Status</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;800&family=Sorts+Mill+Goudy:ital@0;1&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
-            --bg-world: #1a1510;
-            --paper: #f0e6d2; /* Sedikit lebih terang biar bersih */
-            --ink: #1a1510;
-            --gold: #c5a059;
-            --crimson: #9e1b1b;
+            /* Palette Kerajaan */
+            --paper-bg: #fdfbf7;
+            --paper-texture: #f4ecd8;
+            --ink-main: #2c2c2c;
+            --royal-gold: #c6a664;
+            --royal-gold-dark: #8a733e;
+            --royal-red: #800020; /* Burgundy */
+            --royal-blue: #1a237e;
+            --parchment-shadow: #d7cfc1;
         }
 
         body {
-            background-color: var(--bg-world);
-            background-image: repeating-linear-gradient(45deg, #241e18 25%, transparent 25%, transparent 75%, #241e18 75%, #241e18);
-            background-size: 30px 30px;
+            background-color: #1a1a1a;
+            /* Pattern Background Kayu Meja */
+            background-image: repeating-linear-gradient(45deg, #1f1f1f 25%, transparent 25%, transparent 75%, #1f1f1f 75%, #1f1f1f),
+                              repeating-linear-gradient(45deg, #1f1f1f 25%, #1a1a1a 25%, #1a1a1a 75%, #1f1f1f 75%, #1f1f1f);
+            background-size: 20px 20px;
             font-family: 'Cinzel', serif;
             display: flex;
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
-            padding: 40px 20px;
+            padding: 40px;
             margin: 0;
-            color: var(--paper);
+            color: var(--ink-main);
         }
 
         .container {
@@ -35,449 +41,492 @@
             gap: 50px;
             justify-content: center;
             width: 100%;
-            max-width: 1200px;
+            max-width: 1400px;
         }
 
-        /* --- INPUT FORM --- */
-        .registration-desk {
-            background: #221c16;
-            border: 2px solid var(--gold);
+        /* --- CONTROL PANEL (Buku Catatan Guild) --- */
+        .control-panel {
+            background: #fdfbf7;
+            border: 8px solid var(--ink-main);
+            outline: 2px solid var(--royal-gold);
+            outline-offset: -5px;
             padding: 30px;
-            width: 350px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.9);
+            width: 300px;
+            box-shadow: 10px 10px 30px rgba(0,0,0,0.7);
             position: relative;
+            height: fit-content;
         }
         
-        .registration-desk::before {
-            content: "GUILD REGISTRY";
+        /* Hiasan Sudut Panel */
+        .control-panel::after {
+            content: "✍";
             position: absolute;
-            top: -15px; left: 50%; transform: translateX(-50%);
-            background: #221c16;
-            padding: 0 15px;
-            color: var(--gold);
-            font-family: 'Cinzel Decorative', cursive;
-            font-weight: 700;
-            border: 1px solid var(--gold);
-            font-size: 14px;
+            top: -25px; left: 50%; transform: translateX(-50%);
+            font-size: 40px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            width: 50px; height: 50px;
+            display: flex; justify-content: center; align-items: center;
+            border: 2px solid var(--royal-gold);
+            color: var(--royal-gold);
         }
+
+        .panel-header {
+            text-align: center;
+            border-bottom: 2px solid var(--royal-gold);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+        .panel-header h2 { margin: 0; font-family: 'Cinzel Decorative', cursive; font-size: 18px; color: var(--royal-red); }
 
         .input-group { margin-bottom: 12px; }
+        label { display: block; font-size: 10px; font-weight: bold; color: var(--royal-gold-dark); margin-bottom: 4px; letter-spacing: 1px; }
         
-        label {
-            display: block;
-            color: var(--gold);
-            font-size: 11px;
-            margin-bottom: 4px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
         input[type="text"], input[type="number"] {
-            width: 100%;
-            padding: 10px;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid #4a3b2a;
-            color: var(--paper);
-            font-family: 'Cinzel', serif;
-            box-sizing: border-box;
-            font-size: 14px;
+            width: 100%; padding: 8px;
+            background: rgba(0,0,0,0.03);
+            border: 1px solid #ccc; border-bottom: 2px solid var(--royal-gold);
+            font-family: 'Sorts Mill Goudy', serif; font-size: 16px; font-weight: bold;
+            box-sizing: border-box; color: var(--ink-main);
         }
-        
-        /* Upload Button Style */
-        input[type="file"] { display: none; }
-        .file-upload-label {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background: rgba(197, 160, 89, 0.15);
-            border: 1px dashed var(--gold);
-            text-align: center;
-            cursor: pointer;
-            font-size: 11px;
-            color: var(--gold);
-            box-sizing: border-box;
+        input:focus { outline: none; background: rgba(198, 166, 100, 0.1); }
+
+        .file-upload-btn {
+            display: block; width: 100%; padding: 10px;
+            text-align: center; border: 2px dashed var(--royal-gold);
+            background: transparent; color: var(--royal-gold-dark);
+            cursor: pointer; font-size: 11px; font-weight: bold;
             transition: 0.2s;
         }
-        .file-upload-label:hover { background: rgba(197, 160, 89, 0.3); }
+        .file-upload-btn:hover { background: rgba(198, 166, 100, 0.1); }
 
-        button {
-            width: 100%;
-            padding: 14px;
-            margin-top: 15px;
-            cursor: pointer;
-            font-family: 'Cinzel Decorative', cursive;
-            font-weight: bold;
-            font-size: 16px;
-            border: 1px solid var(--gold);
-            transition: 0.3s;
-            text-transform: uppercase;
+        .btn-main {
+            width: 100%; padding: 12px; margin-top: 15px;
+            background: var(--royal-red); color: #fff; border: none;
+            font-family: 'Cinzel Decorative', cursive; font-size: 14px;
+            cursor: pointer; border: 1px solid #5a0016;
+            box-shadow: inset 0 0 0 2px rgba(255,255,255,0.1);
+            transition: 0.2s;
         }
+        .btn-main:hover { background: #5a0016; }
 
-        .btn-calc { background: var(--crimson); color: white; border-color: var(--crimson); }
-        .btn-calc:hover { background: #b92b2b; }
-        
-        .btn-dl { background: var(--gold); color: #221c16; display: none; }
-        .btn-dl:hover { background: #e0b86a; }
+        .btn-dl { background: var(--royal-gold); color: #2e2e2e; display: none; margin-top: 10px; }
+        .btn-dl:hover { background: #a68b54; }
 
-        /* --- GUILD CARD --- */
-        .card-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+        /* --- THE ROYAL CARD (Status Scroll/Parchment) --- */
+        .card-wrapper { perspective: 1000px; }
 
-        #guild-card {
-            width: 420px;
-            min-height: 680px;
-            background-color: var(--paper);
-            /* Texture Kertas Kuno */
-            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.12'/%3E%3C/svg%3E");
-            color: var(--ink);
+        #royal-card {
+            width: 800px; height: 500px;
+            background-color: var(--paper-bg);
+            /* Texture Kertas Tua yang Elegan */
+            background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
             position: relative;
-            padding: 35px;
-            box-sizing: border-box;
-            box-shadow: 0 0 60px rgba(0,0,0,0.8);
-            border: 6px double var(--gold);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
             display: flex;
-            flex-direction: column;
+            padding: 30px;
+            box-sizing: border-box;
+            /* Border Emas Mewah */
+            border: 4px double var(--royal-gold);
+            outline: 10px solid var(--ink-main);
+            overflow: hidden;
         }
 
-        /* Decorative Corners */
-        .corner {
-            position: absolute;
-            width: 30px; height: 30px;
-            border: 2px solid var(--gold);
+        /* Ornamen Sudut (Corner Flourish) */
+        .corner-decor {
+            position: absolute; width: 60px; height: 60px;
+            border: 2px solid var(--royal-gold);
             z-index: 10;
         }
-        .tl { top: 6px; left: 6px; border-right: none; border-bottom: none; }
-        .tr { top: 6px; right: 6px; border-left: none; border-bottom: none; }
-        .bl { bottom: 6px; left: 6px; border-right: none; border-top: none; }
-        .br { bottom: 6px; right: 6px; border-left: none; border-top: none; }
+        .tl { top: 15px; left: 15px; border-right: none; border-bottom: none; }
+        .tl::after { content:"⚜"; position:absolute; top:2px; left:2px; color:var(--royal-gold); font-size:24px; }
+        
+        .tr { top: 15px; right: 15px; border-left: none; border-bottom: none; }
+        .tr::after { content:"⚜"; position:absolute; top:2px; right:2px; color:var(--royal-gold); font-size:24px; }
+        
+        .bl { bottom: 15px; left: 15px; border-right: none; border-top: none; }
+        .bl::after { content:"⚜"; position:absolute; bottom:2px; left:2px; color:var(--royal-gold); font-size:24px; }
+        
+        .br { bottom: 15px; right: 15px; border-left: none; border-top: none; }
+        .br::after { content:"⚜"; position:absolute; bottom:2px; right:2px; color:var(--royal-gold); font-size:24px; }
 
-        .header {
-            text-align: center;
-            border-bottom: 2px solid var(--ink);
-            padding-bottom: 12px;
-            margin-bottom: 25px;
-        }
-        .guild-title {
-            font-family: 'Cinzel Decorative', cursive;
-            font-size: 26px;
-            font-weight: 900;
-            color: var(--ink);
-            margin: 0;
-            text-transform: uppercase;
-            line-height: 1;
-        }
-        .sub-title { font-size: 10px; letter-spacing: 4px; color: #555; text-transform: uppercase; margin-top: 5px; }
-
-        /* PROFILE SECTION */
-        .profile-section {
+        /* Layout Kiri: Foto & Identitas */
+        .left-col {
+            width: 260px;
+            border-right: 2px solid rgba(198, 166, 100, 0.4);
+            padding-right: 25px;
             display: flex;
-            gap: 20px;
-            margin-bottom: 25px;
+            flex-direction: column;
             align-items: center;
-            position: relative;
+            text-align: center;
             z-index: 2;
         }
 
         .portrait-frame {
-            width: 100px;
-            height: 125px;
-            border: 3px solid var(--gold);
+            width: 180px; height: 230px;
+            border: 6px solid var(--royal-gold-dark);
+            box-shadow: 5px 5px 0 rgba(0,0,0,0.1);
             padding: 4px;
             background: #fff;
-            box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
-            flex-shrink: 0;
-        }
-        
-        .portrait-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            background-color: #221c16;
-        }
-
-        .info-col {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .name-box h2 { 
-            font-size: 24px; 
-            margin: 0 0 8px 0; 
-            font-weight: 700; 
-            line-height: 1.1; 
-            text-transform: uppercase; 
-            color: var(--crimson);
-            word-break: break-word;
-        }
-        
-        .class-box { 
-            font-size: 11px; 
-            font-weight: bold; 
-            background: var(--ink); 
-            color: #fff; 
-            padding: 4px 8px; 
-            text-transform: uppercase; 
-            display: inline-block;
-            letter-spacing: 1px;
-        }
-
-        /* RANK STAMP */
-        .rank-area {
-            position: absolute;
-            top: 200px;
-            right: 20px;
-            transform: rotate(-10deg);
-            opacity: 0.25;
-            z-index: 0;
-            pointer-events: none;
-        }
-        .stamp-circle {
-            width: 130px; height: 130px;
-            border: 6px solid #000;
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Cinzel Decorative', cursive;
-            mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><filter id='noise'><feTurbulence type='fractalNoise' baseFrequency='0.1' numOctaves='3'/></filter><rect width='100' height='100' filter='url(%23noise)' opacity='0.8'/></svg>");
-        }
-        .stamp-grade { font-size: 80px; font-weight: 900; line-height: 0.8; }
-        .stamp-label { font-size: 14px; font-weight: bold; margin-top: 5px; text-transform: uppercase; }
-        
-        .score-val {
-            text-align: center;
-            font-size: 22px;
-            font-weight: bold;
-            color: var(--ink);
             margin-bottom: 20px;
-            padding: 8px 0;
-            background: rgba(0,0,0,0.04);
-            border-top: 1px solid rgba(0,0,0,0.2);
-            border-bottom: 1px solid rgba(0,0,0,0.2);
+            position: relative;
+        }
+        /* Pita di atas foto */
+        .portrait-frame::before {
+            content: "OFFICIAL PORTRAIT";
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            background: var(--royal-red); color: #fff;
+            font-size: 9px; padding: 2px 10px; font-weight: bold; letter-spacing: 1px;
+            border: 1px solid var(--ink-main);
         }
 
-        .stats-grid {
-            display: grid;
-            gap: 14px;
-            position: relative;
-            z-index: 2;
+        .portrait-img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: sepia(0.3) contrast(1.1); /* Efek agak vintage */
         }
-        
-        .stat-row { display: flex; align-items: center; gap: 10px; }
-        .stat-label { width: 90px; font-size: 11px; font-weight: bold; color: #444; letter-spacing: 0.5px; }
-        .stat-num { width: 55px; text-align: right; font-weight: bold; font-size: 14px; }
-        
-        .bar-bg {
+
+        .identity-box { width: 100%; margin-top: auto; }
+        .char-name {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 26px; color: var(--ink-main);
+            margin: 0; line-height: 1; border-bottom: 2px solid var(--royal-gold);
+            padding-bottom: 5px; margin-bottom: 5px;
+        }
+        .char-class {
+            font-family: 'Cinzel', serif; font-size: 12px;
+            color: var(--royal-red); font-weight: bold; letter-spacing: 2px; text-transform: uppercase;
+        }
+
+        .guild-seal {
+            margin-top: 15px;
+            border: 1px solid rgba(0,0,0,0.1); padding: 5px; width: 100%;
+        }
+        .guild-name { font-size: 11px; font-weight: bold; color: #555; }
+
+        /* Layout Kanan: Stats & Grafik */
+        .right-col {
             flex: 1;
-            height: 10px;
-            background: rgba(0,0,0,0.1);
+            padding-left: 30px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Judul Dokumen */
+        .doc-header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid var(--royal-gold);
+            margin-bottom: 15px; padding-bottom: 5px;
+        }
+        .doc-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 28px; font-weight: 700; color: var(--ink-main);
+        }
+        .doc-subtitle { font-size: 10px; color: #888; letter-spacing: 2px; text-transform: uppercase; }
+
+        /* Container Grafik & List */
+        .stats-area {
+            display: flex; align-items: center; gap: 20px; flex: 1;
+        }
+
+        /* Radar Chart: Diubah agar terlihat seperti digambar tinta */
+        .radar-wrap {
+            position: relative;
+            width: 220px; height: 220px;
+            display: flex; justify-content: center; align-items: center;
+            background-image: radial-gradient(circle, rgba(198,166,100,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        /* Stat Bars (List) */
+        .stats-list { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+
+        .stat-row { display: flex; align-items: center; gap: 10px; }
+        .stat-label { width: 40px; font-size: 11px; font-weight: bold; color: #555; }
+        
+        /* Bar Gaya Kerajaan */
+        .bar-track {
+            flex: 1; height: 8px; background: rgba(0,0,0,0.05);
             border: 1px solid rgba(0,0,0,0.2);
+            position: relative;
         }
         .bar-fill {
             height: 100%;
+            background-image: linear-gradient(90deg, var(--royal-gold), var(--royal-gold-dark));
             width: 0%;
-            transition: width 0.8s ease-out;
+            transition: width 1s;
+            border-right: 2px solid var(--ink-main); /* Ujung tinta */
         }
+        /* Custom Colors per Stat */
+        .fill-str { background: #8e2b2b; }
+        .fill-vit { background: #2c3e50; }
+        .fill-int { background: #5e3375; }
+        .fill-agi { background: #d4ac0d; }
+        .fill-res { background: #27ae60; }
+        .fill-luk { background: #7f8c8d; }
 
-        /* Tiered Colors for Stats */
-        .fill-atk { background: #8a1c1c; } /* Merah */
-        .fill-dmg { background: #c25e00; } /* Orange */
-        .fill-crit { background: #d4af37; } /* Emas */
-        .fill-def { background: #2f3640; } /* Besi */
-        .fill-res { background: #27ae60; } /* Hijau */
-        .fill-imm { background: #8e44ad; } /* Ungu */
+        .stat-val { width: 40px; text-align: right; font-weight: bold; font-family: 'Sorts Mill Goudy', serif; font-size: 14px; }
 
-        .footer {
-            margin-top: auto;
-            text-align: center;
-            font-size: 9px;
-            color: #777;
-            font-style: italic;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
+        /* Rank Stamp (Stempel Lilin) */
+        .rank-stamp-area {
+            position: absolute; bottom: 10px; right: 10px;
+            transform: rotate(-15deg);
         }
-        .seal {
-            width: 30px; height: 30px;
-            background: var(--crimson);
+        .wax-seal {
+            width: 100px; height: 100px;
+            background: radial-gradient(circle at 30% 30%, #e74c3c, #c0392b);
             border-radius: 50%;
-            box-shadow: 0 0 0 3px rgba(138, 28, 28, 0.2);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: rgba(255,255,255,0.7);
-            font-size: 16px;
+            border: 4px solid #922b21;
+            box-shadow: 3px 3px 5px rgba(0,0,0,0.3), inset 2px 2px 5px rgba(255,255,255,0.2);
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            color: rgba(255,255,255,0.9);
+            font-family: 'Cinzel Decorative', cursive;
+            text-shadow: 1px 1px 0 #7b241c;
         }
+        .seal-rank { font-size: 48px; font-weight: 900; line-height: 0.8; }
+        .seal-label { font-size: 10px; font-weight: bold; margin-top: 2px; }
+
+        /* Total Power */
+        .total-power {
+            position: absolute; bottom: 0; left: 30px;
+            font-family: 'Sorts Mill Goudy', serif;
+            font-size: 14px; font-style: italic; color: #555;
+        }
+        .total-power strong { font-size: 20px; color: var(--royal-red); font-family: 'Cinzel'; }
 
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="registration-desk">
+        <div class="control-panel">
+            <div class="panel-header">
+                <h2>Royal Registry</h2>
+            </div>
             
             <div class="input-group">
-                <label>Guild Name</label>
-                <input type="text" id="inGuild" placeholder="e.g. Ainz Ooal Gown" maxlength="22">
+                <label>Guild / Kingdom</label>
+                <input type="text" id="inGuild" placeholder="e.g. Kingdom of Belzerg">
             </div>
 
             <div class="input-group">
-                <label>Portrait Photo</label>
-                <label for="photoUpload" class="file-upload-label">
-                    [ CLICK TO UPLOAD IMAGE ]
-                </label>
-                <input type="file" id="photoUpload" accept="image/*">
+                <label>Hero Name</label>
+                <input type="text" id="inName" placeholder="e.g. Kazuma Satou">
             </div>
-
-            <div class="input-group">
-                <label>Name</label>
-                <input type="text" id="inName" placeholder="Adventurer Name" maxlength="12">
-            </div>
+            
             <div class="input-group">
                 <label>Class / Job</label>
-                <input type="text" id="inRole" placeholder="e.g. Shadow Hunter" maxlength="15">
+                <input type="text" id="inRole" placeholder="e.g. Adventurer">
             </div>
 
-            <div style="display:flex; gap:10px;">
-                <div class="input-group" style="flex:1">
-                    <label>STR (ATK) Max 350</label>
-                    <input type="number" id="inAtk" placeholder="0">
-                </div>
-                <div class="input-group" style="flex:1">
-                    <label>DEF (ARMOR) Max 350</label>
-                    <input type="number" id="inArmor" placeholder="0">
-                </div>
+            <div class="input-group">
+                <label>Portrait (Upload)</label>
+                <label for="photoUpload" class="file-upload-btn">Select Painting</label>
+                <input type="file" id="photoUpload" accept="image/*" style="display:none">
             </div>
 
-            <div style="display:flex; gap:10px;">
-                <div class="input-group" style="flex:1">
-                    <label>DMG BOOST (%)</label>
-                    <input type="number" id="inDmg" placeholder="%">
-                </div>
-                <div class="input-group" style="flex:1">
-                    <label>CRITICAL (%)</label>
-                    <input type="number" id="inCrit" placeholder="%">
-                </div>
+            <div style="display:flex; gap:5px; margin-top:10px;">
+                <div class="input-group" style="flex:1"><label>STR (Power)</label><input type="number" id="inAtk" placeholder="Max 350"></div>
+                <div class="input-group" style="flex:1"><label>VIT (Defense)</label><input type="number" id="inArmor" placeholder="Max 350"></div>
+            </div>
+            <div style="display:flex; gap:5px;">
+                <div class="input-group" style="flex:1"><label>INT (Magic)</label><input type="number" id="inDmg" placeholder="Max 200%"></div>
+                <div class="input-group" style="flex:1"><label>AGI (Speed)</label><input type="number" id="inCrit" placeholder="Max 100%"></div>
+            </div>
+            <div style="display:flex; gap:5px;">
+                <div class="input-group" style="flex:1"><label>RES (Resist)</label><input type="number" id="inReduc" placeholder="Max 80%"></div>
+                <div class="input-group" style="flex:1"><label>LUK (Luck)</label><input type="number" id="inImmune" placeholder="Max 80%"></div>
             </div>
 
-            <div style="display:flex; gap:10px;">
-                <div class="input-group" style="flex:1">
-                    <label>DMG RESIST (%)</label>
-                    <input type="number" id="inReduc" placeholder="%">
-                </div>
-                <div class="input-group" style="flex:1">
-                    <label>CRIT RESIST (%)</label>
-                    <input type="number" id="inImmune" placeholder="%">
-                </div>
-            </div>
-
-            <button class="btn-calc" onclick="evaluateStats()">EVALUATE POWER</button>
-            <button class="btn-dl" id="btnDl" onclick="downloadCard()">DOWNLOAD JPG</button>
+            <button class="btn-main" onclick="updateCard()">Appraise Status</button>
+            <button class="btn-main btn-dl" id="btnDl" onclick="downloadCard()">Save to Archive</button>
         </div>
 
         <div class="card-wrapper">
-            <div id="guild-card">
-                <div class="corner tl"></div>
-                <div class="corner tr"></div>
-                <div class="corner bl"></div>
-                <div class="corner br"></div>
+            <div id="royal-card">
+                <div class="corner-decor tl"></div>
+                <div class="corner-decor tr"></div>
+                <div class="corner-decor bl"></div>
+                <div class="corner-decor br"></div>
 
-                <div class="header">
-                    <h1 class="guild-title" id="outGuild">ADVENTURER GUILD</h1>
-                    <div class="sub-title">OFFICIAL STATUS REPORT</div>
-                </div>
-
-                <div class="profile-section">
+                <div class="left-col">
                     <div class="portrait-frame">
-                        <img id="outPhoto" class="portrait-img" src="https://via.placeholder.com/150x200/221c16/555?text=?" alt="Profile">
+                        <img id="outPhoto" class="portrait-img" src="https://via.placeholder.com/150x200/e0e0e0/555?text=NO+IMAGE" alt="Hero">
                     </div>
-                    <div class="info-col">
-                        <div class="name-box">
-                            <h2 id="outName">UNKNOWN</h2>
+                    <div class="identity-box">
+                        <h2 class="char-name" id="outName">UNKNOWN</h2>
+                        <div class="char-class" id="outRole">Commoner</div>
+                    </div>
+                    <div class="guild-seal">
+                        <div class="guild-name">ALLEGIANCE</div>
+                        <div style="font-weight:bold; color:var(--royal-blue); margin-top:2px;" id="outGuild">None</div>
+                    </div>
+                </div>
+
+                <div class="right-col">
+                    <div class="doc-header">
+                        <div>
+                            <div class="doc-title">STATUS APPRAISAL</div>
+                            <div class="doc-subtitle">Official Kingdom Assessment</div>
                         </div>
-                        <div class="class-box" id="outRole">NO CLASS</div>
+                        <div style="text-align:right;">
+                            <div style="font-size:30px;">♔</div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="rank-area">
-                    <div class="stamp-circle" id="stampBox" style="border-color:transparent; color:transparent">
-                        <div class="stamp-grade" id="outRankGrade"></div>
-                        <div class="stamp-label" id="outRankLabel"></div>
-                    </div>
-                </div>
+                    <div class="stats-area">
+                        <div class="radar-wrap">
+                            <canvas id="radarChart" width="220" height="220"></canvas>
+                        </div>
 
-                <div class="score-val">
-                    POWER RATING: <span id="outScore">0</span>
-                </div>
+                        <div class="stats-list">
+                            <div class="stat-row">
+                                <span class="stat-label">STR</span>
+                                <div class="bar-track"><div class="bar-fill fill-str" id="barAtk"></div></div>
+                                <span class="stat-val" id="txtAtk">0</span>
+                            </div>
+                             <div class="stat-row">
+                                <span class="stat-label">VIT</span>
+                                <div class="bar-track"><div class="bar-fill fill-vit" id="barArmor"></div></div>
+                                <span class="stat-val" id="txtArmor">0</span>
+                            </div>
+                             <div class="stat-row">
+                                <span class="stat-label">INT</span>
+                                <div class="bar-track"><div class="bar-fill fill-int" id="barDmg"></div></div>
+                                <span class="stat-val" id="txtDmg">0</span>
+                            </div>
+                             <div class="stat-row">
+                                <span class="stat-label">AGI</span>
+                                <div class="bar-track"><div class="bar-fill fill-agi" id="barCrit"></div></div>
+                                <span class="stat-val" id="txtCrit">0</span>
+                            </div>
+                             <div class="stat-row">
+                                <span class="stat-label">RES</span>
+                                <div class="bar-track"><div class="bar-fill fill-res" id="barReduc"></div></div>
+                                <span class="stat-val" id="txtReduc">0</span>
+                            </div>
+                             <div class="stat-row">
+                                <span class="stat-label">LUK</span>
+                                <div class="bar-track"><div class="bar-fill fill-luk" id="barImmune"></div></div>
+                                <span class="stat-val" id="txtImmune">0</span>
+                            </div>
+                        </div>
+                    </div>
 
-                <div class="stats-grid">
-                    <div class="stat-row">
-                        <span class="stat-label">STRENGTH</span>
-                        <div class="bar-bg"><div class="bar-fill fill-atk" id="barAtk"></div></div>
-                        <span class="stat-num" id="valAtk">0</span>
+                    <div class="total-power">
+                        Total Ability Score: <strong id="outScore">0</strong>
                     </div>
-                    <div class="stat-row">
-                        <span class="stat-label">AMPLIFY</span>
-                        <div class="bar-bg"><div class="bar-fill fill-dmg" id="barDmg"></div></div>
-                        <span class="stat-num" id="valDmg">0%</span>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-label">PRECISION</span>
-                        <div class="bar-bg"><div class="bar-fill fill-crit" id="barCrit"></div></div>
-                        <span class="stat-num" id="valCrit">0%</span>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-label">DEFENSE</span>
-                        <div class="bar-bg"><div class="bar-fill fill-def" id="barArmor"></div></div>
-                        <span class="stat-num" id="valArmor">0</span>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-label">FORTITUDE</span>
-                        <div class="bar-bg"><div class="bar-fill fill-res" id="barReduc"></div></div>
-                        <span class="stat-num" id="valReduc">0%</span>
-                    </div>
-                    <div class="stat-row">
-                        <span class="stat-label">WILLPOWER</span>
-                        <div class="bar-bg"><div class="bar-fill fill-imm" id="barImmune"></div></div>
-                        <span class="stat-num" id="valImmune">0%</span>
-                    </div>
-                </div>
 
-                <div class="footer">
-                    <div class="seal">♔</div>
-                    <span>Evaluated by The Grand Master</span>
+                    <div class="rank-stamp-area">
+                        <div class="wax-seal">
+                            <div class="seal-rank" id="outRankGrade">?</div>
+                            <div class="seal-label" id="outRankLabel">UNRANKED</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Upload Foto Script
-        document.getElementById('photoUpload').addEventListener('change', function(event) {
-            const file = event.target.files[0];
+        // --- UPLOAD IMAGE ---
+        document.getElementById('photoUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('outPhoto').src = e.target.result;
-                };
+                reader.onload = (e) => document.getElementById('outPhoto').src = e.target.result;
                 reader.readAsDataURL(file);
             }
         });
 
-        function evaluateStats() {
-            // Get Input
-            let guild = document.getElementById('inGuild').value || "ADVENTURER GUILD";
-            let name = document.getElementById('inName').value || "Unknown";
-            let role = document.getElementById('inRole').value || "Villager";
-            
+        // --- DRAW RADAR (Royal Style) ---
+        function drawRadar(stats) {
+            const canvas = document.getElementById('radarChart');
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+            const cx = w / 2;
+            const cy = h / 2;
+            const radius = 70;
+
+            ctx.clearRect(0, 0, w, h);
+
+            const labels = ["STR", "INT", "LUK", "RES", "VIT", "AGI"];
+            const data = [
+                stats.atk / 350,
+                stats.dmg / 200,
+                stats.immune / 80,
+                stats.reduc / 80,
+                stats.armor / 350,
+                stats.crit / 100
+            ];
+            const sides = 6;
+            const angleStep = (Math.PI * 2) / sides;
+
+            // Draw Web (Grid) - Warna Abu/Emas Pudar
+            ctx.strokeStyle = "rgba(138, 115, 62, 0.3)";
+            ctx.lineWidth = 1;
+            for (let level = 1; level <= 4; level++) {
+                ctx.beginPath();
+                const r = (radius / 4) * level;
+                for (let i = 0; i < sides; i++) {
+                    const angle = i * angleStep - Math.PI / 2;
+                    const x = cx + Math.cos(angle) * r;
+                    const y = cy + Math.sin(angle) * r;
+                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.stroke();
+            }
+
+            // Draw Spokes
+            ctx.beginPath();
+            for (let i = 0; i < sides; i++) {
+                const angle = i * angleStep - Math.PI / 2;
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(cx + Math.cos(angle) * radius, cy + Math.sin(angle) * radius);
+            }
+            ctx.stroke();
+
+            // Draw Stat Shape - Warna Tinta Sihir Ungu/Biru Gelap
+            ctx.beginPath();
+            ctx.fillStyle = "rgba(26, 35, 126, 0.4)"; // Royal Blue transparan
+            ctx.strokeStyle = "#1a237e"; // Royal Blue solid
+            ctx.lineWidth = 2;
+
+            for (let i = 0; i < sides; i++) {
+                const angle = i * angleStep - Math.PI / 2;
+                let val = data[i]; if(val > 1) val = 1;
+                const r = radius * val;
+                const x = cx + Math.cos(angle) * r;
+                const y = cy + Math.sin(angle) * r;
+                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Labels Text - Font Serif
+            ctx.fillStyle = "#8a733e";
+            ctx.font = "bold 11px Cinzel";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            for (let i = 0; i < sides; i++) {
+                const angle = i * angleStep - Math.PI / 2;
+                const r = radius + 20;
+                const x = cx + Math.cos(angle) * r;
+                const y = cy + Math.sin(angle) * r;
+                ctx.fillText(labels[i], x, y);
+            }
+        }
+
+        // --- UPDATE LOGIC ---
+        function updateCard() {
+            const guild = document.getElementById('inGuild').value || "Free Agent";
+            const name = document.getElementById('inName').value || "Unknown Hero";
+            const role = document.getElementById('inRole').value || "Villager";
+
             let atk = parseInt(document.getElementById('inAtk').value) || 0;
             let armor = parseInt(document.getElementById('inArmor').value) || 0;
             let dmg = parseInt(document.getElementById('inDmg').value) || 0;
@@ -485,77 +534,56 @@
             let reduc = parseInt(document.getElementById('inReduc').value) || 0;
             let immune = parseInt(document.getElementById('inImmune').value) || 0;
 
-            // --- LOGIKA HITUNGAN 10,000 POINT ---
-            // Bobot disesuaikan agar max score pas 10,000
-            let pAtk = (Math.min(atk, 350) / 350) * 1500;    // 15%
-            let pArmor = (Math.min(armor, 350) / 350) * 1500; // 15%
-            let pDmg = (Math.min(dmg, 200) / 200) * 2000;     // 20%
-            let pCrit = (Math.min(crit, 100) / 100) * 2500;   // 25% (Paling penting)
-            let pReduc = (Math.min(reduc, 80) / 80) * 1500;   // 15%
-            let pImmune = (Math.min(immune, 80) / 80) * 1000; // 10%
-
+            // Score Logic
+            let pAtk = (Math.min(atk, 350) / 350) * 1500;
+            let pArmor = (Math.min(armor, 350) / 350) * 1500;
+            let pDmg = (Math.min(dmg, 200) / 200) * 2000;
+            let pCrit = (Math.min(crit, 100) / 100) * 2500;
+            let pReduc = (Math.min(reduc, 80) / 80) * 1500;
+            let pImmune = (Math.min(immune, 80) / 80) * 1000;
             let totalScore = Math.floor(pAtk + pArmor + pDmg + pCrit + pReduc + pImmune);
 
-            // --- TIER SYSTEM RAPI (Clean Tiers) ---
-            let rank = "F";
-            let label = "NOVICE";
-            let color = "#7f8c8d"; // Grey
+            // Rank Logic
+            let rank = "F", label = "Novice";
+            if (totalScore >= 3000) { rank = "E"; label = "Rookie"; }
+            if (totalScore >= 5000) { rank = "D"; label = "Regular"; }
+            if (totalScore >= 6000) { rank = "C"; label = "Elite"; }
+            if (totalScore >= 7000) { rank = "B"; label = "Knight"; }
+            if (totalScore >= 8000) { rank = "A"; label = "Master"; }
+            if (totalScore >= 9000) { rank = "S"; label = "Hero"; }
+            if (totalScore >= 9500) { rank = "SS"; label = "Legend"; }
 
-            if (totalScore >= 5000) { rank = "D"; label = "APPRENTICE"; color = "#8d6e63"; } // Brown
-            if (totalScore >= 6000) { rank = "C"; label = "ADEPT"; color = "#27ae60"; } // Green
-            if (totalScore >= 7000) { rank = "B"; label = "EXPERT"; color = "#2980b9"; } // Blue
-            if (totalScore >= 8000) { rank = "A"; label = "MASTER"; color = "#8e44ad"; } // Purple (Target Pro)
-            if (totalScore >= 9000) { rank = "S"; label = "HERO"; color = "#c0392b"; } // Red
-            if (totalScore >= 9500) { rank = "SS"; label = "LEGEND"; color = "#d35400"; } // Orange/Rust
-            if (totalScore >= 9800) { rank = "SSS"; label = "DEMI-GOD"; color = "#c5a059"; } // Gold
-
-            // Update UI Text
-            document.getElementById('outGuild').innerText = guild.toUpperCase();
+            // UI Text Update
+            document.getElementById('outGuild').innerText = guild;
             document.getElementById('outName').innerText = name;
             document.getElementById('outRole').innerText = role;
             document.getElementById('outScore').innerText = totalScore.toLocaleString();
+            document.getElementById('outRankGrade').innerText = rank;
+            document.getElementById('outRankLabel').innerText = label;
 
-            // Update Stamp Visuals
-            const stampBox = document.getElementById('stampBox');
-            const stampGrade = document.getElementById('outRankGrade');
-            const stampLabel = document.getElementById('outRankLabel');
-
-            stampGrade.innerText = rank;
-            stampLabel.innerText = label;
-
-            // Apply Color
-            stampBox.style.borderColor = color;
-            stampBox.style.color = color;
-            stampBox.style.transform = `rotate(${Math.floor(Math.random() * 20) - 10}deg)`;
-
-            // Helper for Bars
-            function setBar(val, max, barId, textId, suffix="") {
-                let pct = (val / max) * 100;
-                if(pct > 100) pct = 100;
-                document.getElementById(barId).style.width = pct + "%";
-                document.getElementById(textId).innerText = val + suffix;
+            // Bars
+            function setBar(val, max, idTxt, idBar, sfx="") {
+                document.getElementById(idTxt).innerText = val + sfx;
+                let pct = (val / max) * 100; if(pct>100) pct=100;
+                document.getElementById(idBar).style.width = pct + "%";
             }
+            setBar(atk, 350, 'txtAtk', 'barAtk');
+            setBar(armor, 350, 'txtArmor', 'barArmor');
+            setBar(dmg, 200, 'txtDmg', 'barDmg', '%');
+            setBar(crit, 100, 'txtCrit', 'barCrit', '%');
+            setBar(reduc, 80, 'txtReduc', 'barReduc', '%');
+            setBar(immune, 80, 'txtImmune', 'barImmune', '%');
 
-            setBar(atk, 350, 'barAtk', 'valAtk');
-            setBar(dmg, 200, 'barDmg', 'valDmg', '%');
-            setBar(crit, 100, 'barCrit', 'valCrit', '%');
-            setBar(armor, 350, 'barArmor', 'valArmor');
-            setBar(reduc, 80, 'barReduc', 'valReduc', '%');
-            setBar(immune, 80, 'barImmune', 'valImmune', '%');
-
+            drawRadar({atk, armor, dmg, crit, reduc, immune});
             document.getElementById('btnDl').style.display = "block";
         }
 
         function downloadCard() {
-            const card = document.getElementById('guild-card');
-            html2canvas(card, {
-                scale: 2,
-                backgroundColor: null,
-                useCORS: true
-            }).then(canvas => {
+            const card = document.getElementById('royal-card');
+            html2canvas(card, { scale: 2, backgroundColor:null }).then(canvas => {
                 let link = document.createElement('a');
-                link.download = `GuildCard-${document.getElementById('inName').value}.jpg`;
-                link.href = canvas.toDataURL('image/jpeg', 0.95);
+                link.download = `RoyalStatus-${document.getElementById('inName').value}.jpg`;
+                link.href = canvas.toDataURL('image/jpeg', 0.9);
                 link.click();
             });
         }
