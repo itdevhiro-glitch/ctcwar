@@ -3,375 +3,265 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mahōteikoku Status Registry - Elite</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;800&family=Sorts+Mill+Goudy:ital@0;1&display=swap" rel="stylesheet">
+    <title>Mahōteikoku Adventurer Card</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Share+Tech+Mono&family=Lato:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
     <style>
         :root {
-            --paper-bg: #fdfbf7;
-            --ink-main: #2c2c2c;
-            --royal-gold: #c6a664;
-            --royal-gold-dark: #8a733e;
-            --royal-red: #800020;
-            --royal-blue: #1a237e;
-            --premium-purple: #4a148c;
-            --premium-black: #121212;
+            --bg-dark: #121212;
+            --panel-bg: rgba(20, 20, 23, 0.9);
+            --gold: #d4af37;
         }
 
         body {
-            background-color: #1a1a1a;
-            background-image: repeating-linear-gradient(45deg, #1f1f1f 25%, transparent 25%, transparent 75%, #1f1f1f 75%, #1f1f1f),
-                              repeating-linear-gradient(45deg, #1f1f1f 25%, #1a1a1a 25%, #1a1a1a 75%, #1f1f1f 75%, #1f1f1f);
+            background-color: var(--bg-dark);
+            background-image: repeating-linear-gradient(45deg, #1a1a1a 0, #1a1a1a 1px, transparent 0, transparent 50%);
             background-size: 20px 20px;
-            font-family: 'Cinzel', serif;
-            margin: 0;
-            padding: 20px 10px;
-            color: var(--ink-main);
-            overflow-x: hidden;
+            margin: 0; padding: 20px;
+            font-family: 'Lato', sans-serif;
+            color: #fff;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
 
-        .container {
+        /* --- CONTROL PANEL --- */
+        .controls {
+            background: var(--panel-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid #333;
+            padding: 20px; border-radius: 12px;
+            width: 100%; max-width: 500px;
+            margin-bottom: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .controls h2 { margin: 0 0 15px 0; color: var(--gold); font-family: 'Cinzel', serif; text-align: center; font-size: 18px; }
+        
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .full-width { grid-column: span 2; }
+        
+        input {
+            width: 100%; background: #222; border: 1px solid #444; color: #fff;
+            padding: 8px; border-radius: 4px; box-sizing: border-box; font-family: 'Share Tech Mono', monospace;
+        }
+        input:focus { border-color: var(--gold); outline: none; }
+        label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 3px; }
+
+        .btn {
+            width: 100%; padding: 12px; border: none; border-radius: 4px; cursor: pointer;
+            font-weight: bold; font-family: 'Cinzel', serif; text-transform: uppercase; margin-top: 10px;
+        }
+        .btn-gen { background: var(--gold); color: #000; }
+        .btn-dl { background: #fff; color: #000; display: none; }
+
+        /* --- THE ADVENTURER CARD --- */
+        .card-wrapper {
+            perspective: 1000px; padding: 20px;
+        }
+
+        #adventurer-card {
+            width: 600px; height: 350px; /* Ratio approx 1.7:1 (Credit Card style) */
+            position: relative;
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            overflow: hidden;
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 30px;
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
+            color: #fff;
+            transition: 0.5s ease;
         }
 
-        .control-panel {
-            background: #fdfbf7;
-            border: 4px solid var(--ink-main);
-            outline: 2px solid var(--royal-gold);
-            padding: 20px;
-            width: 100%;
-            max-width: 400px;
-            box-sizing: border-box;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            position: relative;
-            z-index: 10;
+        /* --- RANK SKINS (Material Dinamis) --- */
+        /* Rank F-E (Iron/Rustic) */
+        .skin-iron {
+            background: linear-gradient(135deg, #2c3e50, #4a5c6e);
+            border: 4px solid #5d6d7e;
+        }
+        .skin-iron .card-accents { border-color: #5d6d7e; }
+
+        /* Rank D-B (Silver/Steel) */
+        .skin-silver {
+            background: linear-gradient(135deg, #bdc3c7, #8e99a3);
+            border: 4px solid #ecf0f1; color: #2c3e50;
+        }
+        .skin-silver .label-txt { color: #555 !important; }
+        .skin-silver h1 { color: #2c3e50 !important; }
+
+        /* Rank A-S (Gold/Royal) */
+        .skin-gold {
+            background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
+            border: 4px solid #f1c40f;
+            box-shadow: 0 0 20px rgba(241, 196, 15, 0.3);
+        }
+        .skin-gold::before {
+            content:''; position: absolute; top:0; left:0; width:100%; height:100%;
+            background: radial-gradient(circle at 80% 20%, rgba(241, 196, 15, 0.2), transparent 50%);
+        }
+        .skin-gold .text-highlight { color: #f1c40f; }
+
+        /* Rank SS-SSS (Mythical) */
+        .skin-mythic {
+            background: linear-gradient(135deg, #000000, #1a0b1a);
+            border: 4px solid #a569bd; /* Purple Magic */
+            box-shadow: 0 0 30px rgba(165, 105, 189, 0.6);
+        }
+        .skin-mythic::after {
+            content:''; position: absolute; top:-50%; left:-50%; width:200%; height:200%;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='50' cy='50' r='1' fill='white' opacity='0.5'/%3E%3C/svg%3E");
+            animation: stars 20s linear infinite; opacity: 0.3;
+        }
+        .skin-mythic .text-highlight { color: #d2b4de; text-shadow: 0 0 10px #a569bd; }
+
+        /* --- CARD LAYOUT --- */
+        .card-bg-symbol {
+            position: absolute; right: -50px; top: -50px;
+            font-size: 350px; opacity: 0.1; color: currentColor;
+            font-family: 'Cinzel Decorative', cursive; pointer-events: none;
         }
 
-        .panel-header { text-align: center; border-bottom: 2px solid var(--royal-gold); margin-bottom: 15px; padding-bottom: 5px; }
-        .panel-header h2 { margin: 0; font-family: 'Cinzel Decorative', cursive; font-size: 16px; color: var(--royal-red); }
-
-        .input-row { display: flex; gap: 10px; }
-        .input-group { margin-bottom: 10px; flex: 1; }
-        label { display: block; font-size: 10px; font-weight: bold; color: var(--royal-gold-dark); margin-bottom: 3px; letter-spacing: 1px; }
-        input[type="text"], input[type="number"] {
-            width: 100%; padding: 10px; background: rgba(0,0,0,0.03);
-            border: 1px solid #ccc; border-bottom: 2px solid var(--royal-gold);
-            font-family: 'Sorts Mill Goudy', serif; font-size: 16px; font-weight: bold;
-            box-sizing: border-box; color: var(--ink-main); border-radius: 4px;
-        }
-        input:focus { outline: none; background: rgba(198, 166, 100, 0.1); border-color: var(--royal-red); }
-
-        .file-upload-btn {
-            display: block; width: 100%; padding: 12px; text-align: center; border: 2px dashed var(--royal-gold);
-            background: rgba(255, 255, 255, 0.5); color: var(--royal-gold-dark);
-            cursor: pointer; font-size: 12px; font-weight: bold; box-sizing: border-box;
+        .left-panel {
+            width: 180px; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            border-right: 2px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.2); z-index: 2;
         }
 
-        .btn-main {
-            width: 100%; padding: 14px; margin-top: 10px; background: var(--royal-red); color: #fff; border: none;
-            font-family: 'Cinzel Decorative', cursive; font-size: 14px; cursor: pointer; border-radius: 4px;
-            box-shadow: 0 4px 0 #5a0016; transition: 0.1s;
+        .photo-frame {
+            width: 120px; height: 120px;
+            border-radius: 50%; border: 3px solid rgba(255,255,255,0.5);
+            overflow: hidden; margin-bottom: 15px; background: #000;
         }
-        .btn-main:active { transform: translateY(4px); box-shadow: 0 0 0 #5a0016; }
-        .btn-dl { background: var(--royal-gold); color: #2e2e2e; display: none; margin-top: 10px; box-shadow: 0 4px 0 #8a733e; }
-        .btn-dl:active { box-shadow: 0 0 0 #8a733e; }
+        .photo-img { width: 100%; height: 100%; object-fit: cover; }
 
-        .card-preview-container { width: 100%; overflow: hidden; display: flex; justify-content: center; padding-bottom: 20px; }
-        .card-scaler { transform-origin: top center; transition: transform 0.3s ease; }
-
-        #royal-card {
-            width: 800px; height: 500px;
-            background-color: var(--paper-bg);
-            background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
-            position: relative;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-            display: flex; padding: 30px; box-sizing: border-box;
-            border: 4px double var(--royal-gold);
-            outline: 10px solid var(--ink-main);
+        .magic-chip {
+            width: 40px; height: 30px; background: linear-gradient(45deg, #d4af37, #f7dc6f);
+            border-radius: 4px; margin-top: auto; position: relative;
+            box-shadow: inset 1px 1px 2px rgba(255,255,255,0.5), 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        .magic-chip::before {
+            content: ''; position: absolute; top: 50%; left: 10%; width: 80%; height: 1px; background: rgba(0,0,0,0.3);
         }
 
-        .watermark {
-            position: absolute; top: 55%; left: 60%;
-            transform: translate(-50%, -50%) rotate(-10deg);
-            font-size: 100px; opacity: 0.04; pointer-events: none;
-            color: var(--royal-red); z-index: 0;
-            font-family: 'Cinzel Decorative', cursive;
-            white-space: nowrap; letter-spacing: 10px;
+        .right-panel {
+            flex: 1; padding: 20px 30px; display: flex; flex-direction: column; z-index: 2;
         }
 
-        .corner-decor { position: absolute; width: 60px; height: 60px; border: 2px solid var(--royal-gold); z-index: 10; }
-        .tl { top: 15px; left: 15px; border-right: none; border-bottom: none; }
-        .tr { top: 15px; right: 15px; border-left: none; border-bottom: none; }
-        .bl { bottom: 15px; left: 15px; border-right: none; border-top: none; }
-        .br { bottom: 15px; right: 15px; border-left: none; border-top: none; }
-        .corner-decor::after { content:"⚜"; position:absolute; color:var(--royal-gold); font-size:24px; }
-        .tl::after { top:2px; left:2px; } .tr::after { top:2px; right:2px; }
-        .bl::after { bottom:2px; left:2px; } .br::after { bottom:2px; right:2px; }
+        .header-row {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; margin-bottom: 15px;
+        }
+        .kingdom-name { font-family: 'Cinzel', serif; font-size: 20px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
+        .card-id { font-family: 'Share Tech Mono', monospace; font-size: 10px; opacity: 0.7; }
 
-        .left-col {
-            width: 260px; border-right: 2px solid rgba(198, 166, 100, 0.4);
-            padding-right: 25px; display: flex; flex-direction: column; align-items: center; text-align: center; z-index: 2;
-        }
-        .portrait-frame {
-            width: 180px; height: 230px; border: 6px solid var(--royal-gold-dark);
-            box-shadow: 5px 5px 0 rgba(0,0,0,0.1); padding: 4px; background: #fff; margin-bottom: 20px;
-        }
-        .portrait-img { width: 100%; height: 100%; object-fit: cover; filter: sepia(0.3) contrast(1.1); }
-        .identity-box { width: 100%; }
-        .char-name {
-            font-family: 'Cinzel Decorative', cursive; font-size: 26px; color: var(--ink-main);
-            margin: 0; line-height: 1; border-bottom: 2px solid var(--royal-gold);
-            padding-bottom: 5px; margin-bottom: 5px; word-wrap: break-word;
-        }
-        .char-class { font-family: 'Cinzel', serif; font-size: 12px; color: var(--royal-red); font-weight: bold; letter-spacing: 2px; text-transform: uppercase; }
-        .guild-seal { margin-top: 15px; border: 1px solid rgba(0,0,0,0.1); padding: 5px; width: 100%; }
-        .guild-name { font-size: 11px; font-weight: bold; color: #555; }
-        .char-quote {
-            margin-top: 20px; font-family: 'Sorts Mill Goudy', serif; font-style: italic;
-            font-size: 13px; color: var(--royal-gold-dark); text-align: center; line-height: 1.4;
+        .info-grid {
+            display: grid; grid-template-columns: 2fr 1fr; gap: 15px;
         }
 
-        .right-col { flex: 1; padding-left: 30px; display: flex; flex-direction: column; position: relative; z-index: 1; }
+        .label-txt { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.6); margin-bottom: 2px; }
+        .value-txt { font-size: 16px; font-weight: bold; margin-bottom: 10px; font-family: 'Lato', sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        .doc-header {
-            display: flex; justify-content: space-between; align-items: flex-end;
-            margin-bottom: 5px; padding-bottom: 0;
+        .rank-display {
+            display: flex; flex-direction: column; align-items: flex-end; justify-content: center;
         }
-        .doc-title { font-family: 'Cinzel Decorative', cursive; font-size: 28px; font-weight: 700; color: var(--ink-main); }
-        .doc-subtitle { font-size: 10px; color: var(--royal-gold-dark); letter-spacing: 2px; font-weight: bold; }
-        .royal-divider { width: 100%; margin-bottom: 15px; }
-
-        .stats-area { display: flex; align-items: flex-start; padding-top: 10px; gap: 20px; flex: 1; }
-        
-        .radar-wrap {
-            position: relative; width: 220px; height: 220px;
-            display: flex; justify-content: center; align-items: center;
-            background-image: radial-gradient(circle, rgba(198,166,100,0.1) 0%, transparent 70%);
-            border-radius: 50%;
+        .rank-big {
+            font-family: 'Cinzel', serif; font-size: 60px; line-height: 0.8; font-weight: 900;
         }
+        .rank-label { font-size: 10px; text-transform: uppercase; letter-spacing: 3px; margin-top: 5px; }
 
-        .stats-list { flex: 1; display: flex; flex-direction: column; gap: 10px; padding-top: 10px; }
-        .stat-row { display: flex; align-items: center; gap: 10px; }
-        .stat-label { width: 55px; font-size: 10px; font-weight: bold; color: #555; text-transform: uppercase; }
-        
-        .bar-track { flex: 1; height: 8px; background: rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.2); position: relative; }
-        .bar-fill {
-            height: 100%; width: 0%; transition: width 1s;
-            border-right: 2px solid var(--ink-main);
-            background-image: linear-gradient(90deg, var(--royal-gold), var(--royal-gold-dark));
+        /* Stats Bar Mini */
+        .stats-mini { margin-top: auto; display: flex; gap: 5px; }
+        .stat-col { flex: 1; }
+        .stat-bar { height: 4px; background: rgba(0,0,0,0.3); border-radius: 2px; margin-top: 2px; overflow: hidden; }
+        .stat-fill { height: 100%; background: #fff; width: 50%; }
+
+        .adventurer-seal {
+            position: absolute; bottom: 15px; right: 20px;
+            width: 80px; height: 80px; opacity: 0.8; mix-blend-mode: overlay;
+            border: 2px solid currentColor; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 10px; text-align: center;
+            transform: rotate(-20deg); font-family: 'Cinzel', serif; font-weight: bold;
         }
 
-        .fill-atk { background: #8e2b2b; }
-        .fill-dmg { background: #5e3375; }
-        .fill-crit { background: #d4ac0d; }
-        .fill-armor { background: #2c3e50; }
-        .fill-reduc { background: #27ae60; }
-        .fill-immune { background: #7f8c8d; }
-        .stat-val { width: 45px; text-align: right; font-weight: bold; font-family: 'Sorts Mill Goudy', serif; font-size: 14px; }
+        @keyframes stars { from {background-position: 0 0;} to {background-position: 100px 100px;} }
 
-        .rank-stamp-area { position: absolute; bottom: 50px; right: 10px; transform: rotate(-15deg); transition: 0.5s; }
-        .wax-seal {
-            width: 100px; height: 100px;
-            background: radial-gradient(circle at 30% 30%, #e74c3c, #c0392b);
-            border-radius: 50%; border: 4px solid #922b21;
-            box-shadow: 3px 3px 5px rgba(0,0,0,0.3), inset 2px 2px 5px rgba(255,255,255,0.2);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            color: rgba(255,255,255,0.9); font-family: 'Cinzel Decorative', cursive;
-            text-shadow: 1px 1px 0 #7b241c; transition: 0.5s;
-        }
-        .seal-rank { font-size: 40px; font-weight: 900; line-height: 0.8; }
-        .seal-label { font-size: 9px; font-weight: bold; margin-top: 4px; text-transform: uppercase; }
-
-        .seal-gold {
-            background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
-            border-color: #8b6508;
-            color: #4e3600; text-shadow: 1px 1px 0 rgba(255,255,255,0.4);
-        }
-        .seal-void {
-            background: radial-gradient(circle at 30% 30%, #2a2a2a, #000);
-            border-color: #800020;
-            color: #d4ac0d;
-            text-shadow: 0 0 5px rgba(212, 172, 13, 0.5);
-            box-shadow: 0 0 15px rgba(0,0,0,0.8), inset 0 0 10px rgba(128,0,32,0.5);
-        }
-
-        .total-power {
-            position: absolute; bottom: 50px; left: 0;
-            font-family: 'Sorts Mill Goudy', serif; font-size: 14px; font-style: italic; color: #555;
-        }
-        .total-power strong { font-size: 20px; color: var(--royal-red); font-family: 'Cinzel'; }
-
-        .legal-footer {
-            position: absolute; bottom: -5px; left: 0; width: 100%;
-            border-top: 1px solid rgba(198, 166, 100, 0.4); padding-top: 5px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .legal-text { font-size: 7px; color: #777; font-family: sans-serif; letter-spacing: 0.5px; max-width: 60%; text-transform: uppercase; }
-        .issue-date { font-size: 9px; font-weight: bold; color: var(--ink-main); }
-        
-        @media (min-width: 1200px) {
-            .container { flex-direction: row; align-items: flex-start; }
-            .card-scaler { transform: none !important; }
-        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="control-panel">
-            <div class="panel-header">
-                <h2>Mahōteikoku Registry</h2>
-            </div>
-            
-            <div class="input-group">
-                <label>Guild / Faction</label>
-                <input type="text" id="inGuild" placeholder="e.g. Iron Alliance">
-            </div>
-
-            <div class="input-row">
-                <div class="input-group">
-                    <label>Name</label>
-                    <input type="text" id="inName" placeholder="Name">
-                </div>
-                <div class="input-group">
-                    <label>Job / Class</label>
-                    <input type="text" id="inRole" placeholder="Job">
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>Motto / Quote</label>
-                <input type="text" id="inQuote" placeholder="e.g. Magic is Might">
-            </div>
-
-            <div class="input-group">
-                <label>Portrait</label>
-                <label for="photoUpload" class="file-upload-btn">Tap to Upload Image</label>
-                <input type="file" id="photoUpload" accept="image/*" style="display:none">
-            </div>
-
-            <div class="input-row">
-                <div class="input-group"><label>Attack Power (Max 350)</label><input type="number" id="inAtk" placeholder="Max 350"></div>
-                <div class="input-group"><label>Armor (Max 350)</label><input type="number" id="inArmor" placeholder="Max 350"></div>
-            </div>
-            <div class="input-row">
-                <div class="input-group"><label>Damage Bonus % (Max 200)</label><input type="number" id="inDmg" placeholder="Max 200%"></div>
-                <div class="input-group"><label>Crit Chance % (Max 100)</label><input type="number" id="inCrit" placeholder="Max 100%"></div>
-            </div>
-            <div class="input-row">
-                <div class="input-group"><label>Dmg Reduction % (Max 80)</label><input type="number" id="inReduc" placeholder="Max 80%"></div>
-                <div class="input-group"><label>Crit Immune % (Max 80)</label><input type="number" id="inImmune" placeholder="Max 80%"></div>
-            </div>
-
-            <button class="btn-main" onclick="updateCard()">Appraise Status</button>
-            <button class="btn-main btn-dl" id="btnDl" onclick="downloadCard()">Download Document</button>
+    <div class="controls">
+        <h2>Guild Registry</h2>
+        <div class="input-grid">
+            <div class="full-width"><label>Name</label><input type="text" id="inName" placeholder="Adventurer Name"></div>
+            <div><label>Class</label><input type="text" id="inClass" placeholder="e.g. Swordsman"></div>
+            <div><label>Guild</label><input type="text" id="inGuild" placeholder="e.g. Silver Wings"></div>
+            <div class="full-width"><label>Photo</label><input type="file" id="inFile" accept="image/*" style="padding: 5px;"></div>
+        </div>
+        
+        <div class="input-grid" style="grid-template-columns: repeat(6, 1fr); gap:5px;">
+             <div><label>ATK</label><input type="number" id="sAtk" value="0"></div>
+            <div><label>DEF</label><input type="number" id="sDef" value="0"></div>
+            <div><label>DMG%</label><input type="number" id="sDmg" value="0"></div>
+            <div><label>CRT%</label><input type="number" id="sCrt" value="0"></div>
+            <div><label>RES%</label><input type="number" id="sRes" value="0"></div>
+            <div><label>C.RES</label><input type="number" id="sImm" value="0"></div>
         </div>
 
-        <div class="card-preview-container">
-            <div class="card-scaler" id="cardScaler">
-                <div id="royal-card">
-                    <div class="corner-decor tl"></div>
-                    <div class="corner-decor tr"></div>
-                    <div class="corner-decor bl"></div>
-                    <div class="corner-decor br"></div>
-                    
-                    <div class="watermark">魔法帝国</div>
+        <button class="btn btn-gen" onclick="generateCard()">Issue Card</button>
+        <button class="btn btn-dl" id="btnDl" onclick="downloadCard()">Export Plate</button>
+    </div>
 
-                    <div class="left-col">
-                        <div class="portrait-frame">
-                            <img id="outPhoto" class="portrait-img" src="https://via.placeholder.com/150x200/e0e0e0/555?text=HERO" alt="Hero">
-                        </div>
-                        <div class="identity-box">
-                            <h2 class="char-name" id="outName">UNKNOWN</h2>
-                            <div class="char-class" id="outRole">Wanderer</div>
-                        </div>
-                        <div class="guild-seal">
-                            <div class="guild-name">ALLEGIANCE</div>
-                            <div style="font-weight:bold; color:var(--royal-blue); margin-top:2px;" id="outGuild">None</div>
-                        </div>
-                        <div class="char-quote" id="outQuote">"In the name of the Empire."</div>
+    <div class="card-wrapper">
+        <div id="cardScaler">
+            <div id="adventurer-card" class="skin-iron">
+                <div class="card-bg-symbol">⚜</div>
+                
+                <div class="left-panel">
+                    <div class="photo-frame">
+                        <img id="outPhoto" class="photo-img" src="https://via.placeholder.com/150/000000/FFFFFF?text=NO+IMG">
+                    </div>
+                    <div style="font-size: 9px; text-align: center; margin-top: 5px; opacity: 0.7;">
+                        MAGIC CIRCUIT<br>AUTHORIZED
+                    </div>
+                    <div class="magic-chip"></div>
+                </div>
+
+                <div class="right-panel">
+                    <div class="header-row">
+                        <div class="kingdom-name text-highlight">Mahōteikoku</div>
+                        <div class="card-id">ID: <span id="outId">000-000</span></div>
                     </div>
 
-                    <div class="right-col">
-                        <div class="doc-header">
+                    <div class="info-grid">
+                        <div style="display: flex; flex-direction: column;">
                             <div>
-                                <div class="doc-title">STATUS REPORT</div>
-                                <div class="doc-subtitle">OFFICIAL RECORD OF CAPABILITY</div>
+                                <div class="label-txt">Adventurer Name</div>
+                                <div class="value-txt text-highlight" style="font-size: 20px;" id="outName">UNKNOWN</div>
                             </div>
-                            <div style="font-size:30px;">♔</div>
-                        </div>
-
-                        <div class="royal-divider">
-                            <svg width="100%" height="15" viewBox="0 0 400 15" preserveAspectRatio="none">
-                                <path d="M0,7 L180,7 M220,7 L400,7 M190,7 L210,7" stroke="#c6a664" stroke-width="2" />
-                                <circle cx="200" cy="7" r="4" fill="#800020" />
-                            </svg>
-                        </div>
-
-                        <div class="stats-area">
-                            <div class="radar-wrap">
-                                <canvas id="radarChart" width="220" height="220"></canvas>
+                            <div style="display: flex; gap: 15px;">
+                                <div>
+                                    <div class="label-txt">Class</div>
+                                    <div class="value-txt" id="outClass">Novice</div>
+                                </div>
+                                <div>
+                                    <div class="label-txt">Party / Guild</div>
+                                    <div class="value-txt" id="outGuild">Freelancer</div>
+                                </div>
                             </div>
-                            <div class="stats-list">
-                                <div class="stat-row">
-                                    <span class="stat-label">ATK</span>
-                                    <div class="bar-track"><div class="bar-fill fill-atk" id="barAtk"></div></div>
-                                    <span class="stat-val" id="txtAtk">0</span>
-                                </div>
-                                <div class="stat-row">
-                                    <span class="stat-label">DMG INC</span>
-                                    <div class="bar-track"><div class="bar-fill fill-dmg" id="barDmg"></div></div>
-                                    <span class="stat-val" id="txtDmg">0%</span>
-                                </div>
-                                <div class="stat-row">
-                                    <span class="stat-label">CRIT</span>
-                                    <div class="bar-track"><div class="bar-fill fill-crit" id="barCrit"></div></div>
-                                    <span class="stat-val" id="txtCrit">0%</span>
-                                </div>
-                                <div class="stat-row">
-                                    <span class="stat-label">ARMOR</span>
-                                    <div class="bar-track"><div class="bar-fill fill-armor" id="barArmor"></div></div>
-                                    <span class="stat-val" id="txtArmor">0</span>
-                                </div>
-                                <div class="stat-row">
-                                    <span class="stat-label">DMG RES</span>
-                                    <div class="bar-track"><div class="bar-fill fill-reduc" id="barReduc"></div></div>
-                                    <span class="stat-val" id="txtReduc">0%</span>
-                                </div>
-                                <div class="stat-row">
-                                    <span class="stat-label">CRIT RES</span>
-                                    <div class="bar-track"><div class="bar-fill fill-immune" id="barImmune"></div></div>
-                                    <span class="stat-val" id="txtImmune">0%</span>
-                                </div>
+                            
+                            <div class="stats-mini">
+                                <div class="stat-col"><div class="label-txt">OFFENSE</div><div class="stat-bar"><div class="stat-fill" id="barOff" style="width:10%"></div></div></div>
+                                <div class="stat-col"><div class="label-txt">DEFENSE</div><div class="stat-bar"><div class="stat-fill" id="barDef" style="width:10%"></div></div></div>
+                                <div class="stat-col"><div class="label-txt">TECHNIQUE</div><div class="stat-bar"><div class="stat-fill" id="barTec" style="width:10%"></div></div></div>
                             </div>
                         </div>
 
-                        <div class="total-power">
-                            Combat Rating: <strong id="outScore">0</strong>
+                        <div class="rank-display">
+                            <div class="rank-big text-highlight" id="outRank">F</div>
+                            <div class="rank-label" id="outRankTitle">ROOKIE</div>
+                            <div style="margin-top: 10px; font-size: 10px; opacity: 0.6;">Power Rating</div>
+                            <div style="font-family: 'Share Tech Mono'; font-size: 14px;" id="outScore">0000</div>
                         </div>
+                    </div>
 
-                        <div class="rank-stamp-area">
-                            <div class="wax-seal" id="rankSeal">
-                                <div class="seal-rank" id="outRankGrade">?</div>
-                                <div class="seal-label" id="outRankLabel">UNRANKED</div>
-                            </div>
-                        </div>
-
-                        <div class="legal-footer">
-                            <div class="legal-text">
-                                CERTIFIED BY THE GRAND ARCHIVE OF MAHŌTEIKOKU (魔法帝国). 
-                                UNAUTHORIZED REPRODUCTION IS TREASON.
-                            </div>
-                            <div class="issue-date">
-                                <span id="outDate">2026-01-01</span> | ID: <span id="outId">00000</span>
-                            </div>
-                        </div>
+                    <div class="adventurer-seal">
+                        OFFICIAL<br>GUILD<br>SEAL
                     </div>
                 </div>
             </div>
@@ -379,230 +269,95 @@
     </div>
 
     <script>
-        // --- LOGIC CONFIGURATION ---
-        // Max Stat dikembalikan ke request awal
-        const MAX_ATK = 350;    
-        const MAX_ARMOR = 350;  
-        const MAX_DMG = 200;    
-        const MAX_CRIT = 100;   
-        const MAX_REDUC = 80;   
-        const MAX_IMMUNE = 80; 
+        // Constants
+        const MAX_ATK = 350; const MAX_DEF = 350;
+        const MAX_DMG = 200; const MAX_CRT = 100;
+        const MAX_RES = 80;  const MAX_IMM = 80;
 
-        function fitCardToScreen() {
-            const scaler = document.getElementById('cardScaler');
-            const cardWidth = 800; 
-            const containerWidth = document.querySelector('.card-preview-container').offsetWidth;
-            const windowWidth = window.innerWidth;
-
-            if (windowWidth < 1200) {
-                const scale = (containerWidth - 20) / cardWidth;
-                scaler.style.transform = `scale(${scale})`;
-                document.querySelector('.card-preview-container').style.height = (500 * scale) + "px";
-            } else {
-                scaler.style.transform = 'scale(1)';
-                document.querySelector('.card-preview-container').style.height = "auto";
-            }
-        }
-
-        window.addEventListener('load', fitCardToScreen);
-        window.addEventListener('resize', fitCardToScreen);
-
-        document.getElementById('photoUpload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
+        document.getElementById('inFile').addEventListener('change', function(e) {
+            if(e.target.files[0]) {
                 const reader = new FileReader();
                 reader.onload = (e) => document.getElementById('outPhoto').src = e.target.result;
-                reader.readAsDataURL(file);
+                reader.readAsDataURL(e.target.files[0]);
             }
         });
 
-        function drawRadar(stats) {
-            const canvas = document.getElementById('radarChart');
-            const ctx = canvas.getContext('2d');
-            const w = canvas.width;
-            const h = canvas.height;
-            const cx = w / 2;
-            const cy = h / 2;
-            const radius = 70;
-
-            ctx.clearRect(0, 0, w, h);
-
-            const labels = ["ATK", "DMG", "C.RES", "D.RES", "ARMOR", "CRIT"];
-            const data = [
-                stats.atk / MAX_ATK,
-                stats.dmg / MAX_DMG,
-                stats.immune / MAX_IMMUNE,
-                stats.reduc / MAX_REDUC,
-                stats.armor / MAX_ARMOR,
-                stats.crit / MAX_CRIT
-            ];
-            
-            const sides = 6;
-            const angleStep = (Math.PI * 2) / sides;
-
-            ctx.strokeStyle = "rgba(138, 115, 62, 0.3)";
-            ctx.lineWidth = 1;
-            for (let level = 1; level <= 4; level++) {
-                ctx.beginPath();
-                const r = (radius / 4) * level;
-                for (let i = 0; i < sides; i++) {
-                    const angle = i * angleStep - Math.PI / 2;
-                    const x = cx + Math.cos(angle) * r;
-                    const y = cy + Math.sin(angle) * r;
-                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-                }
-                ctx.closePath();
-                ctx.stroke();
-            }
-
-            ctx.beginPath();
-            for (let i = 0; i < sides; i++) {
-                const angle = i * angleStep - Math.PI / 2;
-                ctx.moveTo(cx, cy);
-                ctx.lineTo(cx + Math.cos(angle) * radius, cy + Math.sin(angle) * radius);
-            }
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.fillStyle = "rgba(128, 0, 32, 0.4)";
-            ctx.strokeStyle = "#800020";
-            ctx.lineWidth = 2;
-            for (let i = 0; i < sides; i++) {
-                const angle = i * angleStep - Math.PI / 2;
-                let val = data[i]; if(val > 1) val = 1;
-                const r = radius * val;
-                const x = cx + Math.cos(angle) * r;
-                const y = cy + Math.sin(angle) * r;
-                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-            }
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-
-            ctx.fillStyle = "#8a733e";
-            ctx.font = "bold 10px Cinzel";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            for (let i = 0; i < sides; i++) {
-                const angle = i * angleStep - Math.PI / 2;
-                const r = radius + 22;
-                const x = cx + Math.cos(angle) * r;
-                const y = cy + Math.sin(angle) * r;
-                ctx.fillText(labels[i], x, y);
-            }
-        }
-
-        function updateCard() {
-            const guild = document.getElementById('inGuild').value || "Wasteland";
+        function generateCard() {
+            // 1. Get Values
             const name = document.getElementById('inName').value || "Unknown";
-            const role = document.getElementById('inRole').value || "Survivor";
-            const quote = document.getElementById('inQuote').value || '"Magic is not a tool, but a path."';
-
-            let atk = parseInt(document.getElementById('inAtk').value) || 0;
-            let armor = parseInt(document.getElementById('inArmor').value) || 0;
-            let dmg = parseInt(document.getElementById('inDmg').value) || 0;
-            let crit = parseInt(document.getElementById('inCrit').value) || 0;
-            let reduc = parseInt(document.getElementById('inReduc').value) || 0;
-            let immune = parseInt(document.getElementById('inImmune').value) || 0;
-
-            // --- SCORE LOGIC (Persulit di Top Tier) ---
-            // Max Total Score Ideal = 12,000 poin
-            // 250 atk/armor adalah ~71% dari Max Stat (350).
-            // Kita atur poin agar 70% stat = Rank S (sekitar 8400 total poin).
+            const job = document.getElementById('inClass').value || "Novice";
+            const guild = document.getElementById('inGuild').value || "None";
             
-            let pAtk = (Math.min(atk, MAX_ATK) / MAX_ATK) * 2000;
-            let pArmor = (Math.min(armor, MAX_ARMOR) / MAX_ARMOR) * 2000;
-            let pDmg = (Math.min(dmg, MAX_DMG) / MAX_DMG) * 2500;
-            let pCrit = (Math.min(crit, MAX_CRIT) / MAX_CRIT) * 2000;
-            let pReduc = (Math.min(reduc, MAX_REDUC) / MAX_REDUC) * 1750;
-            let pImmune = (Math.min(immune, MAX_IMMUNE) / MAX_IMMUNE) * 1750;
-            
-            let totalScore = Math.floor(pAtk + pArmor + pDmg + pCrit + pReduc + pImmune);
+            let atk = parseInt(document.getElementById('sAtk').value)||0;
+            let def = parseInt(document.getElementById('sDef').value)||0;
+            let dmg = parseInt(document.getElementById('sDmg').value)||0;
+            let crt = parseInt(document.getElementById('sCrt').value)||0;
+            let res = parseInt(document.getElementById('sRes').value)||0;
+            let imm = parseInt(document.getElementById('sImm').value)||0;
 
-            // --- RANK THRESHOLDS ---
-            // Asumsi rata-rata stat pemain mengisi semua kolom.
-            // 250 di stat utama + stat lain seimbang akan menghasilkan sekitar 8500 poin -> S
-            // Untuk ke SS, harus naik drastis (hampir perfect).
-            
-            let rank = "F", label = "CIVILIAN";
-            let sealClass = "wax-seal"; 
+            // 2. Calc Score (True Balance Logic)
+            let score = Math.floor(
+                ((Math.min(atk,MAX_ATK)/MAX_ATK)*2000) +
+                ((Math.min(def,MAX_DEF)/MAX_DEF)*2000) +
+                ((Math.min(dmg,MAX_DMG)/MAX_DMG)*2000) +
+                ((Math.min(crt,MAX_CRT)/MAX_CRT)*2000) +
+                ((Math.min(res,MAX_RES)/MAX_RES)*2000) +
+                ((Math.min(imm,MAX_IMM)/MAX_IMM)*2000)
+            );
 
-            if (totalScore >= 2500) { rank = "E"; label = "RECRUIT"; }
-            if (totalScore >= 4000) { rank = "D"; label = "SOLDIER"; }
-            if (totalScore >= 5500) { rank = "C"; label = "VETERAN"; }
-            if (totalScore >= 7000) { rank = "B"; label = "KNIGHT"; }
+            // 3. Determine Rank & Skin
+            let rank = "F", title = "ROOKIE", skin = "skin-iron";
             
-            // Masuk Tier Atas (Hard Mode)
-            if (totalScore >= 8300) { 
-                // Di angka ini (sekitar stat 250), player masuk S
-                rank = "S"; label = "WARLORD"; sealClass = "wax-seal seal-gold"; 
-            }
-            if (totalScore >= 10500) { 
-                // Lompatan jauh dari 8300 ke 10500 (butuh stat mendekati 300++)
-                rank = "SS"; label = "EMPEROR"; sealClass = "wax-seal seal-void"; 
-            } 
-            if (totalScore >= 11600) { 
-                // Butuh stat hampir 350 rata (Perfect)
-                rank = "SSS"; label = "DIVINE"; sealClass = "wax-seal seal-void"; 
-            }
+            if(score >= 2500) { rank="E"; title="SCOUT"; skin="skin-iron"; }
+            if(score >= 4000) { rank="D"; title="IRON"; skin="skin-iron"; }
+            if(score >= 5500) { rank="C"; title="STEEL"; skin="skin-silver"; }
+            if(score >= 7000) { rank="B"; title="SILVER"; skin="skin-silver"; }
+            if(score >= 8500) { rank="A"; title="GOLD"; skin="skin-gold"; }
+            if(score >= 10200) { rank="S"; title="PLATINUM"; skin="skin-gold"; }
+            if(score >= 11500) { rank="SS"; title="MYTHIC"; skin="skin-mythic"; }
+            if(score >= 11900) { rank="SSS"; title="LEGEND"; skin="skin-mythic"; }
 
-            document.getElementById('outGuild').innerText = guild;
+            // 4. Update DOM
             document.getElementById('outName').innerText = name;
-            document.getElementById('outRole').innerText = role;
-            document.getElementById('outQuote').innerText = quote;
-            document.getElementById('outScore').innerText = totalScore.toLocaleString();
-            
-            const rGrade = document.getElementById('outRankGrade');
-            const rLabel = document.getElementById('outRankLabel');
-            const rSeal = document.getElementById('rankSeal');
+            document.getElementById('outClass').innerText = job;
+            document.getElementById('outGuild').innerText = guild;
+            document.getElementById('outScore').innerText = score;
+            document.getElementById('outRank').innerText = rank;
+            document.getElementById('outRankTitle').innerText = title;
+            document.getElementById('outId').innerText = Math.floor(Math.random()*10000000);
 
-            rGrade.innerText = rank;
-            rLabel.innerText = label;
-            rSeal.className = sealClass;
+            // 5. Update Visuals
+            const card = document.getElementById('adventurer-card');
+            card.className = ""; // Reset
+            card.classList.add(skin);
 
-            if(rank === "SSS") rGrade.style.fontSize = "32px";
-            else rGrade.style.fontSize = "48px";
+            // 6. Update Mini Bars (Approximate visual)
+            let offPct = ((atk/MAX_ATK) + (dmg/MAX_DMG) + (crt/MAX_CRT)) / 3 * 100;
+            let defPct = ((def/MAX_DEF) + (res/MAX_RES) + (imm/MAX_IMM)) / 3 * 100;
+            let tecPct = (score / 12000) * 100;
 
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('outDate').innerText = today;
-            document.getElementById('outId').innerText = Math.floor(Math.random() * 90000) + 10000;
+            document.getElementById('barOff').style.width = Math.min(offPct, 100) + "%";
+            document.getElementById('barDef').style.width = Math.min(defPct, 100) + "%";
+            document.getElementById('barTec').style.width = Math.min(tecPct, 100) + "%";
 
-            function setBar(val, max, idTxt, idBar, sfx="") {
-                document.getElementById(idTxt).innerText = val + sfx;
-                let pct = (val / max) * 100; if(pct>100) pct=100;
-                document.getElementById(idBar).style.width = pct + "%";
-            }
-            
-            setBar(atk, MAX_ATK, 'txtAtk', 'barAtk');
-            setBar(dmg, MAX_DMG, 'txtDmg', 'barDmg', '%');
-            setBar(crit, MAX_CRIT, 'txtCrit', 'barCrit', '%');
-            setBar(armor, MAX_ARMOR, 'txtArmor', 'barArmor');
-            setBar(reduc, MAX_REDUC, 'txtReduc', 'barReduc', '%');
-            setBar(immune, MAX_IMMUNE, 'txtImmune', 'barImmune', '%');
-
-            drawRadar({atk, armor, dmg, crit, reduc, immune});
             document.getElementById('btnDl').style.display = "block";
-            
-            fitCardToScreen();
         }
 
         function downloadCard() {
-            const scaler = document.getElementById('cardScaler');
-            const originalTransform = scaler.style.transform;
-            scaler.style.transform = "none";
+            const card = document.getElementById('adventurer-card');
             
-            const card = document.getElementById('royal-card');
+            // Temporary upscale for crisp text
+            const scale = 2;
             
             html2canvas(card, {
-                scale: 2,
+                scale: scale,
                 backgroundColor: null,
                 useCORS: true
             }).then(canvas => {
                 let link = document.createElement('a');
-                link.download = `MahoteikokuStatus-${document.getElementById('inName').value}.jpg`;
-                link.href = canvas.toDataURL('image/jpeg', 0.9);
+                link.download = `GuildCard_${document.getElementById('inName').value}.png`;
+                link.href = canvas.toDataURL('image/png');
                 link.click();
-                scaler.style.transform = originalTransform;
             });
         }
     </script>
