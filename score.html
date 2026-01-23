@@ -173,15 +173,14 @@
 
         .adventurer-seal {
             position: absolute; bottom: 15px; right: 20px;
-            width: 90px; height: 90px; 
-            opacity: 0.85; 
-            background-image: url('guidseal.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            transform: rotate(-20deg); 
-            border: none;
-            mix-blend-mode: normal;
+            width: 100px; height: 100px; 
+            opacity: 1; 
+            transform: rotate(-10deg); 
+            z-index: 10;
+        }
+        .adventurer-seal img {
+            width: 100%; height: 100%; object-fit: contain;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.5));
         }
 
         @keyframes stars { from {background-position: 0 0;} to {background-position: 100px 100px;} }
@@ -269,7 +268,9 @@
                         </div>
                     </div>
 
-                    <div class="adventurer-seal"></div>
+                    <div class="adventurer-seal">
+                        <img src="guildseal.png" alt="Guild Seal" onerror="alert('Gambar guildseal.png tidak ditemukan. Pastikan nama file benar dan ada di folder yang sama.')">
+                    </div>
                 </div>
             </div>
         </div>
@@ -354,7 +355,8 @@
             html2canvas(card, {
                 scale: scale,
                 backgroundColor: null,
-                useCORS: true
+                useCORS: true,
+                allowTaint: true 
             }).then(canvas => {
                 let link = document.createElement('a');
                 link.download = `GuildCard_${document.getElementById('inName').value}.png`;
