@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mahōteikoku Registry - Smart Title</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;800&family=Sorts+Mill+Goudy:ital@0;1&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --paper-bg: #fdfbf7;
+            --ink-main: #2c2c2c;
+            --royal-gold: #c6a664;
+            --royal-gold-dark: #8a733e;
+            --royal-red: #800020;
+            --royal-blue: #1a237e;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            background-image: repeating-linear-gradient(45deg, #1f1f1f 25%, transparent 25%, transparent 75%, #1f1f1f 75%, #1f1f1f),
+                              repeating-linear-gradient(45deg, #1f1f1f 25%, #1a1a1a 25%, #1a1a1a 75%, #1f1f1f 75%, #1f1f1f);
+            background-size: 20px 20px;
+            font-family: 'Cinzel', serif;
+            margin: 0; padding: 20px 10px; color: var(--ink-main); overflow-x: hidden;
+        }
+
+        .container {
+            display: flex; flex-direction: column; align-items: center; gap: 30px;
+            width: 100%; max-width: 1300px; margin: 0 auto;
+        }
+
+        /* PANEL */
+        .control-panel {
+            background: #fdfbf7; border: 4px solid var(--ink-main); outline: 2px solid var(--royal-gold);
+            padding: 20px; width: 100%; max-width: 450px; box-sizing: border-box;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5); position: relative; z-index: 10;
+        }
+        .panel-header { text-align: center; border-bottom: 2px solid var(--royal-gold); margin-bottom: 15px; padding-bottom: 5px; }
+        .panel-header h2 { margin: 0; font-family: 'Cinzel Decorative', cursive; font-size: 16px; color: var(--royal-red); }
+
+        .input-row { display: flex; gap: 10px; }
+        .input-group { margin-bottom: 10px; flex: 1; }
+        .section-title { 
+            font-size: 11px; font-weight: bold; color: var(--royal-blue); 
+            border-bottom: 1px dashed #ccc; margin: 10px 0 5px 0; padding-bottom: 2px;
+        }
+        
+        label { display: block; font-size: 10px; font-weight: bold; color: var(--royal-gold-dark); margin-bottom: 3px; letter-spacing: 1px; }
+        input[type="text"], input[type="number"], select {
+            width: 100%; padding: 8px; background: rgba(0,0,0,0.03);
+            border: 1px solid #ccc; border-bottom: 2px solid var(--royal-gold);
+            font-family: 'Sorts Mill Goudy', serif; font-size: 14px; font-weight: bold;
+            box-sizing: border-box; color: var(--ink-main); border-radius: 4px;
+        }
+        input:focus, select:focus { outline: none; background: rgba(198, 166, 100, 0.1); border-color: var(--royal-red); }
+
+        .file-upload-btn {
+            display: block; width: 100%; padding: 10px; text-align: center; border: 2px dashed var(--royal-gold);
+            background: rgba(255, 255, 255, 0.5); color: var(--royal-gold-dark);
+            cursor: pointer; font-size: 11px; font-weight: bold; box-sizing: border-box;
+        }
+
+        .btn-main {
+            width: 100%; padding: 14px; margin-top: 10px; background: var(--royal-red); color: #fff; border: none;
+            font-family: 'Cinzel Decorative', cursive; font-size: 14px; cursor: pointer; border-radius: 4px;
+            box-shadow: 0 4px 0 #5a0016; transition: 0.1s;
+        }
+        .btn-main:active { transform: translateY(4px); box-shadow: 0 0 0 #5a0016; }
+        .btn-dl { background: var(--royal-gold); color: #2e2e2e; display: none; margin-top: 10px; box-shadow: 0 4px 0 #8a733e; }
+
+        /* CARD */
+        .card-preview-container { width: 100%; overflow: hidden; display: flex; justify-content: center; padding-bottom: 20px; }
+        .card-scaler { transform-origin: top center; transition: transform 0.3s ease; }
+
+        #royal-card {
+            width: 850px; height: 550px;
+            background-color: var(--paper-bg);
+            background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            display: flex; padding: 35px; box-sizing: border-box;
+            border: 4px double var(--royal-gold);
+            outline: 10px solid var(--ink-main);
+        }
+
+        .watermark {
+            position: absolute; top: 55%; left: 60%;
+            transform: translate(-50%, -50%) rotate(-10deg);
+            font-size: 100px; opacity: 0.04; pointer-events: none;
+            color: var(--royal-red); z-index: 0;
+            font-family: 'Cinzel Decorative', cursive;
+            white-space: nowrap; letter-spacing: 10px;
+        }
+
+        .corner-decor { position: absolute; width: 60px; height: 60px; border: 2px solid var(--royal-gold); z-index: 10; }
+        .tl { top: 15px; left: 15px; border-right: none; border-bottom: none; }
+        .tr { top: 15px; right: 15px; border-left: none; border-bottom: none; }
+        .bl { bottom: 15px; left: 15px; border-right: none; border-top: none; }
+        .br { bottom: 15px; right: 15px; border-left: none; border-top: none; }
+        .corner-decor::after { content:"⚜"; position:absolute; color:var(--royal-gold); font-size:24px; }
+        .tl::after { top:2px; left:2px; } .tr::after { top:2px; right:2px; }
+        .bl::after { bottom:2px; left:2px; } .br::after { bottom:2px; right:2px; }
+
+        /* Left Column */
+        .left-col {
+            width: 260px; border-right: 2px solid rgba(198, 166, 100, 0.4);
+            padding-right: 25px; display: flex; flex-direction: column; align-items: center; text-align: center; z-index: 2;
+        }
+        .portrait-frame {
+            width: 180px; height: 230px; border: 6px solid var(--royal-gold-dark);
+            box-shadow: 5px 5px 0 rgba(0,0,0,0.1); padding: 4px; background: #fff; margin-bottom: 15px; position: relative;
+        }
+        .level-badge {
+            position: absolute; bottom: -10px; right: -10px;
+            background: var(--royal-red); color: #fff;
+            width: 50px; height: 50px; border-radius: 50%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            border: 3px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            font-family: 'Cinzel', serif; z-index: 5;
+        }
+        .lvl-label { font-size: 8px; line-height: 1; }
+        .lvl-val { font-size: 18px; font-weight: bold; line-height: 1; }
+
+        .portrait-img { width: 100%; height: 100%; object-fit: cover; filter: sepia(0.2) contrast(1.1); }
+        .identity-box { width: 100%; margin-bottom: 10px; }
+        
+        .char-name {
+            font-family: 'Cinzel Decorative', cursive; font-size: 24px; color: var(--ink-main);
+            margin: 0; line-height: 1; word-wrap: break-word;
+        }
+
+        /* HIGHLIGHT CLASS (Defaultnya nanti diatur JS) */
+        .char-title-highlight {
+            font-family: 'Cinzel', serif; font-size: 11px; color: var(--royal-red);
+            font-weight: bold; letter-spacing: 2px; text-transform: uppercase;
+            border-top: 1px solid var(--royal-gold);
+            border-bottom: 1px solid var(--royal-gold);
+            padding: 2px 0; margin: 4px 0 8px 0; width: 100%;
+            background: rgba(198, 166, 100, 0.1);
+            display: none; /* DEFAULT HIDDEN */
+        }
+
+        .char-class { font-family: 'Cinzel', serif; font-size: 14px; color: var(--ink-main); font-weight: bold; letter-spacing: 2px; text-transform: uppercase; }
+        
+        .guild-seal { margin-top: 10px; border: 1px solid rgba(0,0,0,0.1); padding: 5px; width: 100%; background: rgba(255,255,255,0.3); }
+        .guild-name { font-size: 10px; font-weight: bold; color: #555; text-transform: uppercase; letter-spacing: 1px; }
+        .char-quote {
+            margin-top: auto; padding-bottom: 10px; font-family: 'Sorts Mill Goudy', serif; font-style: italic;
+            font-size: 13px; color: var(--royal-gold-dark); text-align: center; line-height: 1.4;
+        }
+
+        /* Right Column */
+        .right-col { flex: 1; padding-left: 30px; display: flex; flex-direction: column; position: relative; z-index: 1; }
+        
+        .doc-header {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            margin-bottom: 5px;
+        }
+        .doc-title { font-family: 'Cinzel Decorative', cursive; font-size: 28px; font-weight: 700; color: var(--ink-main); }
+        .doc-subtitle { font-size: 10px; color: var(--royal-gold-dark); letter-spacing: 2px; font-weight: bold; }
+        .royal-divider { width: 100%; margin-bottom: 10px; }
+
+        /* INFO GRID */
+        .personal-info-container {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            border: 2px solid rgba(198, 166, 100, 0.3);
+            background: rgba(255, 255, 255, 0.3);
+            padding: 25px;
+            position: relative;
+        }
+        
+        .personal-info-container::before {
+            content: ""; position: absolute; top: -3px; left: -3px; width: 10px; height: 10px; border-top: 3px solid var(--royal-gold); border-left: 3px solid var(--royal-gold);
+        }
+        .personal-info-container::after {
+            content: ""; position: absolute; bottom: -3px; right: -3px; width: 10px; height: 10px; border-bottom: 3px solid var(--royal-gold); border-right: 3px solid var(--royal-gold);
+        }
+
+        .info-block {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border-right: 1px dashed rgba(198, 166, 100, 0.5);
+        }
+        .info-block:last-child { border-right: none; }
+
+        .info-label {
+            font-size: 10px; font-weight: bold; color: var(--royal-gold-dark);
+            text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;
+        }
+        .info-value {
+            font-family: 'Cinzel', serif; font-size: 20px; font-weight: bold; color: var(--ink-main);
+        }
+
+        /* Rank Seal */
+        .rank-stamp-area { position: absolute; bottom: 50px; right: 10px; transform: rotate(-15deg); transition: 0.5s; pointer-events: none; }
+        .wax-seal {
+            width: 110px; height: 110px;
+            background: radial-gradient(circle at 30% 30%, #e74c3c, #c0392b);
+            border-radius: 50%; border: 4px solid #922b21;
+            box-shadow: 3px 3px 5px rgba(0,0,0,0.3), inset 2px 2px 5px rgba(255,255,255,0.2);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            color: rgba(255,255,255,0.9); font-family: 'Cinzel Decorative', cursive;
+            text-shadow: 1px 1px 0 #7b241c; transition: 0.5s;
+        }
+        .seal-rank { font-size: 48px; font-weight: 900; line-height: 0.8; }
+        .seal-label { font-size: 9px; font-weight: bold; margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
+
+        .seal-gold {
+            background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
+            border-color: #8b6508;
+            color: #4e3600; text-shadow: 1px 1px 0 rgba(255,255,255,0.4);
+        }
+        .seal-void {
+            background: radial-gradient(circle at 30% 30%, #2a2a2a, #000);
+            border-color: #800020;
+            color: #d4ac0d;
+            text-shadow: 0 0 5px rgba(212, 172, 13, 0.5);
+            box-shadow: 0 0 15px rgba(0,0,0,0.8), inset 0 0 10px rgba(128,0,32,0.5);
+        }
+
+        .total-power {
+            position: absolute; bottom: 50px; left: 0;
+            font-family: 'Sorts Mill Goudy', serif; font-size: 14px; font-style: italic; color: #555;
+        }
+        .total-power strong { font-size: 20px; color: var(--royal-red); font-family: 'Cinzel'; }
+
+        .legal-footer {
+            position: absolute; bottom: -5px; left: 0; width: 100%;
+            border-top: 1px solid rgba(198, 166, 100, 0.4); padding-top: 5px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .legal-text { font-size: 7px; color: #777; font-family: sans-serif; letter-spacing: 0.5px; max-width: 60%; text-transform: uppercase; }
+        .issue-date { font-size: 9px; font-weight: bold; color: var(--ink-main); }
+        
+        @media (min-width: 1300px) {
+            .container { flex-direction: row; align-items: flex-start; justify-content: center; }
+            .card-scaler { transform: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="control-panel">
+            <div class="panel-header">
+                <h2>Registry Control</h2>
+            </div>
+            
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Name</label>
+                    <input type="text" id="inName" placeholder="Name">
+                </div>
+                <div class="input-group">
+                    <label>Title (If empty, hidden)</label>
+                    <input type="text" id="inTitle" placeholder="e.g. The Hero">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Race</label>
+                    <input type="text" id="inRace" placeholder="e.g. Human, Elf">
+                </div>
+                <div class="input-group">
+                    <label>Age</label>
+                    <input type="text" id="inAge" placeholder="e.g. 24">
+                </div>
+                <div class="input-group">
+                    <label>Gender</label>
+                    <select id="inGender" style="height:35px;">
+                        <option value="" disabled selected>Select...</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Unknown">Unknown</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Class</label>
+                    <input type="text" id="inRole" placeholder="Job Class">
+                </div>
+                <div class="input-group">
+                    <label>Guild</label>
+                    <input type="text" id="inGuild" placeholder="Guild Name">
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label>Level (Max 350)</label>
+                <input type="number" id="inLvl" placeholder="1-350">
+            </div>
+
+            <div class="input-group" style="margin-top:10px;">
+                <label>Portrait</label>
+                <label for="photoUpload" class="file-upload-btn">Upload Portrait</label>
+                <input type="file" id="photoUpload" accept="image/*" style="display:none">
+            </div>
+
+            <div class="section-title">Base Stats (Hidden Calc)</div>
+            <div class="input-row">
+                <div class="input-group"><label>STR</label><input type="number" id="inStr" placeholder="0"></div>
+                <div class="input-group"><label>INT</label><input type="number" id="inInt" placeholder="0"></div>
+                <div class="input-group"><label>VIT</label><input type="number" id="inVit" placeholder="0"></div>
+            </div>
+            <div class="input-row">
+                <div class="input-group"><label>AGI</label><input type="number" id="inAgi" placeholder="0"></div>
+                <div class="input-group"><label>DEX</label><input type="number" id="inDex" placeholder="0"></div>
+            </div>
+
+            <div class="section-title">Special Stats (Hidden Calc)</div>
+            <div class="input-row">
+                <div class="input-group"><label>CRT (Crit)</label><input type="number" id="inCrt" placeholder="0"></div>
+                <div class="input-group"><label>LUK (Luck)</label><input type="number" id="inLuk" placeholder="0"></div>
+            </div>
+            <div class="input-row">
+                <div class="input-group"><label>MTL (Mental)</label><input type="number" id="inMtl" placeholder="0"></div>
+                <div class="input-group"><label>TEC (Tech)</label><input type="number" id="inTec" placeholder="0"></div>
+            </div>
+            
+            <div class="input-group" style="margin-top:10px;">
+                <label>Motto</label>
+                <input type="text" id="inQuote" placeholder="Quote">
+            </div>
+
+            <button class="btn-main" onclick="updateCard()">Appraise Build</button>
+            <button class="btn-main btn-dl" id="btnDl" onclick="downloadCard()">Download Card</button>
+        </div>
+
+        <div class="card-preview-container">
+            <div class="card-scaler" id="cardScaler">
+                <div id="royal-card">
+                    <div class="corner-decor tl"></div>
+                    <div class="corner-decor tr"></div>
+                    <div class="corner-decor bl"></div>
+                    <div class="corner-decor br"></div>
+                    
+                    <div class="watermark">魔法帝国</div>
+
+                    <div class="left-col">
+                        <div class="portrait-frame">
+                            <img id="outPhoto" class="portrait-img" src="https://via.placeholder.com/150x200/e0e0e0/555?text=AVATAR" alt="Hero">
+                            <div class="level-badge">
+                                <span class="lvl-label">LV.</span>
+                                <span class="lvl-val" id="outLvl">1</span>
+                            </div>
+                        </div>
+                        <div class="identity-box">
+                            <h2 class="char-name" id="outName">UNKNOWN</h2>
+                            <div class="char-title-highlight" id="outTitleDisplay"></div>
+                            
+                            <div class="char-class" id="outRole">NOVICE</div>
+                        </div>
+                        <div class="guild-seal">
+                            <div class="guild-name">AFFILIATION</div>
+                            <div style="font-weight:bold; color:var(--royal-blue); margin-top:2px;" id="outGuild">None</div>
+                        </div>
+                        <div class="char-quote" id="outQuote">"..."</div>
+                    </div>
+
+                    <div class="right-col">
+                        <div class="doc-header">
+                            <div>
+                                <div class="doc-title">ADVENTURER RECORD</div>
+                                <div class="doc-subtitle">OFFICIAL STATUS REGISTRY</div>
+                            </div>
+                            <div style="font-size:30px;">♔</div>
+                        </div>
+
+                        <div class="royal-divider">
+                            <svg width="100%" height="15" viewBox="0 0 400 15" preserveAspectRatio="none">
+                                <path d="M0,7 L180,7 M220,7 L400,7 M190,7 L210,7" stroke="#c6a664" stroke-width="2" />
+                                <circle cx="200" cy="7" r="4" fill="#800020" />
+                            </svg>
+                        </div>
+
+                        <div class="personal-info-container">
+                            <div class="info-block">
+                                <span class="info-label">RACE</span>
+                                <span class="info-value" id="outRace">---</span>
+                            </div>
+                            <div class="info-block">
+                                <span class="info-label">GENDER</span>
+                                <span class="info-value" id="outGender">---</span>
+                            </div>
+                            <div class="info-block">
+                                <span class="info-label">AGE</span>
+                                <span class="info-value" id="outAge">--</span>
+                            </div>
+                        </div>
+
+                        <div style="font-size:11px; color:#666; font-style:italic; margin-top:20px; border-left:2px solid var(--royal-gold); padding-left:10px;">
+                            "Verified by the Royal Guild Registrar. Magic affinity confirmed via Soul Scan."
+                        </div>
+
+                        <div class="total-power">
+                            Combat Potential: <strong id="outScore">0</strong> <span id="outBuildType" style="font-size:10px; color:#777; margin-left:5px;">(Unassessed)</span>
+                        </div>
+
+                        <div class="rank-stamp-area">
+                            <div class="wax-seal" id="rankSeal">
+                                <div class="seal-rank" id="outRankGrade">?</div>
+                                <div class="seal-label" id="outRankLabel">UNRANKED</div>
+                            </div>
+                        </div>
+
+                        <div class="legal-footer">
+                            <div class="legal-text">
+                                CERTIFIED BY THE GRAND ARCHIVE OF MAHŌTEIKOKU. 
+                                BUILD VERIFICATION ID: <span id="outId">00000</span>
+                            </div>
+                            <div class="issue-date">
+                                <span id="outDate">2026-01-01</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MAX_BASE = 550;
+        const MAX_SPEC = 255;
+        const MAX_LVL = 350;
+
+        function fitCardToScreen() {
+            const scaler = document.getElementById('cardScaler');
+            const cardWidth = 850; 
+            const containerWidth = document.querySelector('.card-preview-container').offsetWidth;
+            const windowWidth = window.innerWidth;
+
+            if (windowWidth < 1300) {
+                const scale = (containerWidth - 20) / cardWidth;
+                scaler.style.transform = `scale(${scale})`;
+                document.querySelector('.card-preview-container').style.height = (550 * scale) + "px";
+            } else {
+                scaler.style.transform = 'scale(1)';
+                document.querySelector('.card-preview-container').style.height = "auto";
+            }
+        }
+
+        window.addEventListener('load', fitCardToScreen);
+        window.addEventListener('resize', fitCardToScreen);
+
+        document.getElementById('photoUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => document.getElementById('outPhoto').src = e.target.result;
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function updateCard() {
+            // Text Inputs
+            const name = document.getElementById('inName').value || "UNKNOWN";
+            const role = document.getElementById('inRole').value || "NOVICE";
+            const guild = document.getElementById('inGuild').value || "None";
+            const quote = document.getElementById('inQuote').value || "...";
+            
+            // TITLE LOGIC: Only show if input exists
+            const titleInput = document.getElementById('inTitle').value.trim();
+            const titleDisplay = document.getElementById('outTitleDisplay');
+            
+            if (titleInput === "") {
+                titleDisplay.style.display = "none";
+            } else {
+                titleDisplay.style.display = "inline-block";
+                titleDisplay.innerText = titleInput;
+            }
+            
+            // Bio Inputs
+            const race = document.getElementById('inRace').value || "---";
+            const age = document.getElementById('inAge').value || "--";
+            const gender = document.getElementById('inGender').value || "---";
+
+            let lvl = parseInt(document.getElementById('inLvl').value) || 1;
+
+            // Stats for Calculation
+            let str = parseInt(document.getElementById('inStr').value) || 0;
+            let int = parseInt(document.getElementById('inInt').value) || 0;
+            let vit = parseInt(document.getElementById('inVit').value) || 0;
+            let agi = parseInt(document.getElementById('inAgi').value) || 0;
+            let dex = parseInt(document.getElementById('inDex').value) || 0;
+            
+            let crt = parseInt(document.getElementById('inCrt').value) || 0;
+            let luk = parseInt(document.getElementById('inLuk').value) || 0;
+            let mtl = parseInt(document.getElementById('inMtl').value) || 0;
+            let tec = parseInt(document.getElementById('inTec').value) || 0;
+
+            // Caps
+            if(lvl > MAX_LVL) lvl = MAX_LVL;
+            
+            // Calculations
+            let normStr = str / MAX_BASE; 
+            let normInt = int / MAX_BASE;
+            let normVit = vit / MAX_BASE;
+            let normAgi = agi / MAX_BASE;
+            let normDex = dex / MAX_BASE;
+            
+            let normCrt = crt / MAX_SPEC;
+            let normLuk = luk / MAX_SPEC;
+            let normMtl = mtl / MAX_SPEC;
+            let normTec = tec / MAX_SPEC;
+
+            let allStats = [normStr, normInt, normVit, normAgi, normDex, normCrt, normLuk, normMtl, normTec];
+            allStats.sort((a, b) => b - a);
+
+            let primary = allStats[0];
+            let secondary = allStats[1];
+            let tertiary = allStats[2];
+            
+            let scoreLvl = (lvl / MAX_LVL) * 3000;
+            let scoreStats = (primary * 6000) + (secondary * 3500) + (tertiary * 1500) + ((allStats.slice(3).reduce((a,b)=>a+b, 0)/6) * 1000);
+            let totalScore = Math.floor(scoreLvl + scoreStats);
+
+            let buildType = "(Generalist)";
+            if (primary > 0.9 && secondary < 0.5) buildType = "(Specialist)";
+            if (primary > 0.9 && secondary > 0.8) buildType = "(Dual-Stat)";
+            if (normTec > 0.8) buildType = "(Crafter)";
+            if (normMtl > 0.8 && normVit > 0.8) buildType = "(Tank)";
+
+            // RANKING
+            let rank = "F", label = "Novice";
+            let sealClass = "wax-seal"; 
+
+            if (totalScore >= 3000) { rank = "E"; label = "Apprentice"; }
+            if (totalScore >= 5500) { rank = "D"; label = "Soldier"; }
+            if (totalScore >= 7500) { rank = "C"; label = "Officer"; }
+            if (totalScore >= 9000) { rank = "B"; label = "Elite"; }
+            if (totalScore >= 11000) { rank = "A"; label = "Hero"; }
+            
+            if (totalScore >= 12500) { rank = "S"; label = "Legend"; sealClass = "wax-seal seal-gold"; }
+            if (totalScore >= 13800) { rank = "SS"; label = "Demigod"; sealClass = "wax-seal seal-void"; }
+            if (totalScore >= 14800) { rank = "SSS"; label = "Divine"; sealClass = "wax-seal seal-void"; }
+
+            // UPDATE UI
+            document.getElementById('outName').innerText = name;
+            document.getElementById('outRole').innerText = role;
+            document.getElementById('outGuild').innerText = guild;
+            document.getElementById('outQuote').innerText = `"${quote}"`;
+            document.getElementById('outLvl').innerText = lvl;
+            document.getElementById('outScore').innerText = totalScore.toLocaleString();
+            document.getElementById('outBuildType').innerText = buildType;
+
+            document.getElementById('outRace').innerText = race;
+            document.getElementById('outAge').innerText = age;
+            document.getElementById('outGender').innerText = gender;
+
+            const rGrade = document.getElementById('outRankGrade');
+            const rLabel = document.getElementById('outRankLabel');
+            const rSeal = document.getElementById('rankSeal');
+
+            rGrade.innerText = rank;
+            rLabel.innerText = label;
+            rSeal.className = sealClass;
+            rGrade.style.fontSize = rank.length > 2 ? "32px" : "48px";
+
+            document.getElementById('outDate').innerText = new Date().toISOString().split('T')[0];
+            document.getElementById('outId').innerText = Math.floor(Math.random() * 900000) + 100000;
+
+            document.getElementById('btnDl').style.display = "block";
+            fitCardToScreen();
+        }
+
+        function downloadCard() {
+            const scaler = document.getElementById('cardScaler');
+            const originalTransform = scaler.style.transform;
+            scaler.style.transform = "none";
+            
+            const card = document.getElementById('royal-card');
+            
+            html2canvas(card, {
+                scale: 2,
+                backgroundColor: null,
+                useCORS: true
+            }).then(canvas => {
+                let link = document.createElement('a');
+                link.download = `Registry-${document.getElementById('inName').value || 'Card'}.jpg`;
+                link.href = canvas.toDataURL('image/jpeg', 0.9);
+                link.click();
+                scaler.style.transform = originalTransform;
+            });
+        }
+    </script>
+</body>
+</html>
