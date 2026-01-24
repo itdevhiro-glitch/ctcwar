@@ -1431,6 +1431,7 @@ select.input-dark:hover {
     color: #fff;
     transition: 0.3s ease;
     font-family: 'Inter', sans-serif;
+    z-index: 1;
 }
 
 .card-bg-symbol {
@@ -1451,7 +1452,8 @@ select.input-dark:hover {
     align-items: center;
     border-right: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(0, 0, 0, 0.2);
-    z-index: 2;
+    z-index: 10;
+    position: relative;
 }
 
 .right-panel {
@@ -1459,7 +1461,8 @@ select.input-dark:hover {
     padding: 20px 25px;
     display: flex;
     flex-direction: column;
-    z-index: 2;
+    z-index: 10;
+    position: relative;
 }
 
 .photo-frame {
@@ -1582,15 +1585,20 @@ select.input-dark:hover {
 }
 
 .skin-iron {
-    background: linear-gradient(135deg, #1a1a1a, #434343);
-    border: 4px solid #6b7280;
-    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+    background: linear-gradient(135deg, #1f2937, #111827);
+    border: 4px solid #4b5563;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.9);
+}
+
+.skin-iron .text-highlight {
+    color: #9ca3af;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 .skin-gold {
-    background: linear-gradient(135deg, #705816, #2e2402);
-    border: 4px solid #ffd700;
-    box-shadow: 0 0 25px rgba(255, 215, 0, 0.3), inset 0 0 30px rgba(0, 0, 0, 0.4);
+    background: linear-gradient(135deg, #422a04, #271601);
+    border: 4px solid #facc15;
+    box-shadow: 0 0 20px rgba(234, 179, 8, 0.2), inset 0 0 20px rgba(0, 0, 0, 0.5);
     position: relative;
     overflow: hidden;
 }
@@ -1602,20 +1610,21 @@ select.input-dark:hover {
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(to bottom right, rgba(255, 215, 0, 0) 0%, rgba(255, 215, 0, 0.15) 50%, rgba(255, 215, 0, 0) 100%);
+    background: linear-gradient(to bottom right, transparent 40%, rgba(250, 204, 21, 0.1) 50%, transparent 60%);
     transform: rotate(30deg);
     pointer-events: none;
+    z-index: 0;
 }
 
 .skin-gold .text-highlight {
-    color: #ffd700;
-    text-shadow: 0 0 15px #b8860b;
+    color: #facc15;
+    text-shadow: 0 0 10px rgba(234, 179, 8, 0.6);
 }
 
 .skin-platinum {
-    background: linear-gradient(135deg, #1e293b, #475569);
+    background: linear-gradient(135deg, #0f172a, #334155);
     border: 4px solid #e2e8f0;
-    box-shadow: 0 0 25px rgba(226, 232, 240, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.2), inset 0 0 15px rgba(255, 255, 255, 0.05);
     position: relative;
     overflow: hidden;
 }
@@ -1623,29 +1632,40 @@ select.input-dark:hover {
 .skin-platinum::after {
     content: '';
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(to bottom right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
-    transform: rotate(30deg);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(105deg, transparent 20%, rgba(255, 255, 255, 0.05) 25%, transparent 30%);
     pointer-events: none;
+    z-index: 0;
 }
 
 .skin-platinum .text-highlight {
-    color: #e2e8f0;
-    text-shadow: 0 0 15px #94a3b8;
+    color: #bae6fd;
+    text-shadow: 0 0 10px #0ea5e9;
 }
 
 .skin-mythic {
-    background: linear-gradient(135deg, #0f0518, #2e1035);
+    background: linear-gradient(135deg, #180324, #2e0245);
     border: 4px solid #d946ef;
-    box-shadow: 0 0 30px rgba(217, 70, 239, 0.6);
+    box-shadow: 0 0 35px rgba(192, 38, 211, 0.4), inset 0 0 30px rgba(0, 0, 0, 0.7);
+    position: relative;
+    overflow: hidden;
+}
+
+.skin-mythic::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 80% 20%, rgba(217, 70, 239, 0.15), transparent 50%);
+    pointer-events: none;
+    z-index: 0;
 }
 
 .skin-mythic .text-highlight {
-    color: #f0abfc;
-    text-shadow: 0 0 10px #d946ef;
+    color: #f5d0fe;
+    text-shadow: 0 0 15px #d946ef, 0 0 30px #a21caf;
 }
 
 .fa-trash:hover {
